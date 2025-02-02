@@ -80,21 +80,6 @@ module alu #(parameter DATA_BUS_WIDTH = 8)
           tmp = {1'b0, ~register1};        
           is_carry = 0;
         end
-      INC1:
-        begin                          //used for PC after 1 Byte instructions
-          tmp = {1'b0, register1} + 1;         
-          is_carry = tmp[DATA_BUS_WIDTH];
-        end
-      INC2:
-        begin                          //used for PC after 2 Byte instructions
-          tmp = {1'b0, register1} + 2;        
-          is_carry = tmp[DATA_BUS_WIDTH];
-        end
-      INC3:
-        begin                          //used for PC after 3 Byte instructions
-          tmp = {1'b0, register1} + 3;        
-          is_carry = tmp[DATA_BUS_WIDTH];
-        end
     endcase
     result = tmp[DATA_BUS_WIDTH-1:0];
     

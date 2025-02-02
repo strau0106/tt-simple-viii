@@ -16,10 +16,7 @@ package controlpack;
         AND,
         OR,
         XOR,
-        NOT,
-        INC1, //Needed to manage the PC
-        INC2, //Needed to manage the PC
-        INC3 //Needed to manage the PC
+        NOT
     } alu_op_e /*verilator public*/;
     //typedef enum logic [1:0] {
     //    NONE,

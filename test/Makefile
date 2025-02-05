@@ -1,11 +1,10 @@
 .PHONY: all
 
-%_results.xml:
-	#make -f test_$*.mk clean
-	make -f $*_test.mk
-	mv results.xml $@
+%_test:
+	make -f module_test.mk MODULE_NAME=${*}
+	mv results.xml $*_results.xml
 
-all: clean alu_results.xml
+all: clean alu_test
 	cat *results.xml > results.xml
 
 clean:

@@ -4,7 +4,7 @@
 WAVES ?= 1
 SIM ?= verilator
 SRC_DIR = $(PWD)/../src
-MODULE_NAME = alu
+MODULE_NAME ?= alu
 PROJECT_SOURCES = packages/* modules/$(MODULE_NAME).sv
 TOPLEVEL_LANG = verilog
 
@@ -24,7 +24,8 @@ COMPILE_ARGS 		+= -I$(SRC_DIR)/packages
 
 # Verilator things
 ifeq ($(SIM), verilator)
-EXTRA_ARGS			+= --timing --trace
+COMPILE_ARGS += -DVM_COVERAGE
+EXTRA_ARGS			+= --timing --trace --trace-fst --coverage
 endif
 
 # Python Module

@@ -104,7 +104,3 @@ async def test_multi_register_writes(dut):
         reg_1_out, _ = await read_registers(dut, reg, REGISTER_SEL.REG_A)
         assert reg_1_out == test_values[reg], f"Multi-register write failed: Register {reg.name} expected {test_values[reg]}, got {reg_1_out}"
 
-
-@cocotb.test()
-async def all_tests_pass(dut):
-    raise TestSuccess("All tests passed!")

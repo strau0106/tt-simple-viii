@@ -1,6 +1,8 @@
 import controlpack::*;
-
-module registers #(DATA_BUS_WIDTH) (
+// icarus does not properly support
+// 1800-2012 IEEE :(
+// TODO: Retest for loops for array assignments/other solution
+module registers #(parameter DATA_BUS_WIDTH = 8) (
   input logic clock, 
   input logic reset,
 
@@ -21,8 +23,11 @@ module registers #(DATA_BUS_WIDTH) (
   assign reg_2_out = registers_d[reg_2_out_sel];
 
 
-  always @(registers_d or reg_data_in or op) begin
-    registers_q = registers_d;
+  always @(registers_d[0] or registers_d[1] or registers_d[2] or registers_d[3] or op or reg_data_in) begin
+    registers_q[0] = registers_d[0];
+    registers_q[1] = registers_d[1];
+    registers_q[2] = registers_d[2];
+    registers_q[3] = registers_d[3];
     
       if (op == INWRITE)
         registers_q[reg_1_out_sel] = reg_data_in;
@@ -30,9 +35,18 @@ module registers #(DATA_BUS_WIDTH) (
 
   always @(negedge clock or negedge reset) begin
     if (reset) begin
-      registers_d <= '{default: '0};
+      registers_q[0] <= 0;
+      registers_q[1] <= 0;
+      registers_q[2] <= 0;
+      registers_q[3] <= 0;
+
     end else begin
-      registers_d <= registers_q;
+      // iverilog...
+      registers_d[0] <= registers_q[0];
+      registers_d[1] <= registers_q[1];
+      registers_d[2] <= registers_q[2];
+      registers_d[3] <= registers_q[3];
+    
     end
   end
 

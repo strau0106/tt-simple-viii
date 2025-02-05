@@ -9,7 +9,7 @@ PROJECT_SOURCES = packages/* modules/$(MODULE_NAME).sv
 TOPLEVEL_LANG = verilog
 
 # RTL simulation:
-SIM_BUILD				= sim_build/$(MODULE_NAME)/rtl
+SIM_BUILD				= sim_build/$(MODULE_NAME)_$(SIM)
 
 # Add verilog sources
 VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))

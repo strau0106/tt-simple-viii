@@ -14,7 +14,7 @@ module alu #(parameter DATA_BUS_WIDTH = 8)
     logic is_zero;
     logic is_carry;
 
-    always @ (register1 or register2 or op or is_carry or is_zero or tmp or result) begin
+    always_comb begin
     //Default asignments (make sure that every signal has a value at any time in order to avoid latches)
     flag.alu_carry = 0;
     flag.alu_zero = 0;

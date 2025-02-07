@@ -28,6 +28,3 @@ class REGISTER_SEL(Enum):
         REG_D = 3
       
 
-if __name__ == "__main__":
-        for reg in REGISTER_SEL:
-                print(f"Register {reg} has value {reg}")

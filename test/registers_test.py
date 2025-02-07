@@ -13,11 +13,11 @@ async def reset(dut):
     await FallingEdge(dut.clock)
 
 async def write_register(dut, reg_sel, data):
-    dut.op.value = REGISTERS_OP.INWRITE.value
+    dut.op.value = REGISTERS_OP.REG_WRITE.value
     dut.reg_1_out_sel.value = reg_sel.value
     dut.reg_data_in.value = data
     await FallingEdge(dut.clock)
-    dut.op.value = REGISTERS_OP.INNOP.value
+    dut.op.value = REGISTERS_OP.REG_NOP.value
 
 async def read_registers(dut, reg_1_sel, reg_2_sel):
     dut.reg_1_out_sel.value = reg_1_sel.value
@@ -65,7 +65,7 @@ async def test_nop_operation(dut):
     
     test_value = random.randint(0, 2**DATA_BUS_WIDTH - 1)
     await write_register(dut, REGISTER_SEL.REG_A, test_value)
-    dut.op.value = REGISTERS_OP.INNOP.value
+    dut.op.value = REGISTERS_OP.REG_NOP.value
     dut.reg_1_out_sel.value = REGISTER_SEL.REG_A.value
     dut.reg_data_in.value = 0xa
     await FallingEdge(dut.clock)

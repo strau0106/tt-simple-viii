@@ -18,22 +18,23 @@ package controlpack;
         XOR,
         NOT
     } alu_op_e /*verilator public*/;
-    //typedef enum logic [1:0] {
-    //    NONE,
-    //    ZERO,
-    //    CARRY,
-    //    REMAINDER
-    //} alu_flag_e /*verilator public*/;
 
     typedef struct packed {
         logic alu_zero;
         logic alu_carry;
-    }alu_flag_t;
+    } alu_flag_t /*verilator public*/;
 
-    typedef enum logic [2:0] {
-        READ,
-        WRITE
-    } memory_op_e /*verilator public*/;
+    typedef enum logic [1:0] {
+            REG_A,
+            REG_B,
+            REG_C,
+            REG_D
+    } register_sel_e /*verilator public*/;
+    
+    typedef enum logic{
+        REG_NOP,
+        REG_WRITE
+    } registers_op_e /*verilator public*/;
 
     typedef enum logic [2:0] {
             IR_NOP,

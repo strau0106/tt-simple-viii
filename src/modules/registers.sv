@@ -30,7 +30,7 @@ module registers #(parameter DATA_BUS_WIDTH = 8) (
     registers_q[2] = registers_d[2];
     registers_q[3] = registers_d[3];
     
-      if (op == INWRITE)
+      if (op == REG_WRITE)
         registers_q[reg_1_out_sel] = reg_data_in;
   end
 

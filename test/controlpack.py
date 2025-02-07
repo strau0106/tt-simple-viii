@@ -18,8 +18,8 @@ DATA_BUS_WIDTH = 8
 NUM_REGISTERS = 4 
 
 class REGISTERS_OP(Enum):
-        INWRITE = 0
-        INNOP = 1
+        REG_NOP = 0
+        REG_WRITE = 1
 
 class REGISTER_SEL(Enum):
         REG_A = 0

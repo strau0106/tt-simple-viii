@@ -23,7 +23,8 @@ module registers #(parameter DATA_BUS_WIDTH = 8) (
   assign reg_2_out = registers_d[reg_2_out_sel];
 
 
-  always @(registers_d[0] or registers_d[1] or registers_d[2] or registers_d[3] or op or reg_data_in) begin
+ //always @(registers_d[0] or registers_d[1] or registers_d[2] or registers_d[3] or op or reg_data_in) begin
+ always_comb begin
     registers_q[0] = registers_d[0];
     registers_q[1] = registers_d[1];
     registers_q[2] = registers_d[2];
@@ -33,12 +34,12 @@ module registers #(parameter DATA_BUS_WIDTH = 8) (
         registers_q[reg_1_out_sel] = reg_data_in;
   end
 
-  always @(negedge clock or negedge reset) begin
+  always_ff @(negedge clock or negedge reset) begin
     if (reset) begin
-      registers_q[0] <= 0;
-      registers_q[1] <= 0;
-      registers_q[2] <= 0;
-      registers_q[3] <= 0;
+      registers_d[0] <= 0;
+      registers_d[1] <= 0;
+      registers_d[2] <= 0;
+      registers_d[3] <= 0;
 
     end else begin
       // iverilog...

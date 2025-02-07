@@ -4,7 +4,7 @@ from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge, FallingEdge, Timer
 from cocotb.result import TestSuccess, TestFailure
 import random
-from controlpack import REGISTERS_OP, REGISTER_SEL, DATA_BUS_WIDTH, NUM_REGISTERS
+from controlpack import REGISTERS_OP, REGISTER_SEL, DATA_BUS_WIDTH
 
 async def reset(dut):
     dut.reset.value = 1
@@ -46,7 +46,6 @@ async def test_reset_functionality(dut):
 
     for reg in REGISTER_SEL:
         test_value = random.randint(0, 2**DATA_BUS_WIDTH - 1)
-        print(f"Setting {reg.name} to {test_value}")
         await write_register(dut, reg, test_value)
 
     await FallingEdge(dut.clock)
@@ -55,7 +54,6 @@ async def test_reset_functionality(dut):
     
     for reg in REGISTER_SEL:
         reg_1_out, reg_2_out = await read_registers(dut, reg, reg)
-        print(f"Register {reg.name} has value {reg_1_out}, {reg_2_out}")
         assert reg_1_out == 0 and reg_2_out == 0, f"Reset failed: Register {reg.name} not zeroed out"
 
 

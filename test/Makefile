@@ -8,4 +8,5 @@ all: clean alu_test registers_test
 	cat *results.xml > results.xml
 
 clean:
-	rm *results.xml || true
+	rm *.xml *.vcd *.fst *.dat || true
+	rm -rf sim_build/ __pycache__/ || true

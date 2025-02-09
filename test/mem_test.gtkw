@@ -1,0 +1,34 @@
+[*]
+[*] GTKWave Analyzer v3.3.118 (w)1999-2023 BSI
+[*] Sun Feb  9 19:27:14 2025
+[*]
+[dumpfile] "/home/strau/repos/gym/ma/computer/test/mem.vcd"
+[dumpfile_mtime] "Sun Feb  9 19:26:21 2025"
+[dumpfile_size] 3163
+[savefile] "/home/strau/repos/gym/ma/computer/test/mem_test.gtkw"
+[timestart] 0
+[size] 2560 1361
+[pos] -1 -1
+*-17.699999 583000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] mem_tb.
+[treeopen] mem_tb.mem_instance.
+[sst_width] 273
+[signals_width] 166
+[sst_expanded] 1
+[sst_vpaned_height] 421
+@22
+mem_tb.mem_instance.mem_ctrl_instance.bus_data_out[7:0]
+mem_tb.mem_instance.mem_ctrl_instance.data_in[7:0]
+@28
+mem_tb.mem_instance.mem_ctrl_instance.stall_txn
+mem_tb.mem_instance.mem_ctrl_instance.start_read
+mem_tb.mem_instance.mem_ctrl_instance.start_write
+mem_tb.mem_instance.mem_ctrl_instance.data_ready
+mem_tb.mem_instance.mem_ctrl_instance.data_req
+@23
+mem_tb.mem_instance.qspi_ctrl_instance.spi_data_oe[3:0]
+@22
+mem_tb.mem_instance.qspi_ctrl_instance.spi_data_in[3:0]
+mem_tb.mem_instance.qspi_ctrl_instance.spi_data_out[3:0]
+[pattern_trace] 1
+[pattern_trace] 0

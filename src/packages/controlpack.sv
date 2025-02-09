@@ -42,34 +42,18 @@ package controlpack;
             REL_SUB,
             REL_ADD,
             INC
-    } address_reg_op_e /*verilator public*/;
+    } addr_reg_op_e /*verilator public*/;
 
-    typedef enum logic [2:0] {
-            REG_A,
-            REG_B,
-            REG_ADDR_LOW,
-            REG_ADDR_HIGH,
-            PC_ADDR_LOW,
-            PC_ADDR_HIGH,
-            MC_EXT_ADDR_BASE_LOW,
-            MC_EXT_ADDR_BASE_HIGH
-    } register_sel_e /*verilator public*/;
-    
-    typedef enum bit {
+    typedef enum logic {
         MAR,
         PC
-    } memory_bus_selector_e /*verilator public*/;
-
-    typedef enum logic[1:0]{
-        REG_NOP,
-        LOAD,
-        ENABLE
-    } reg_op_e /*verilator public*/;
-
-    typedef enum logic{
-        INWRITE,
-        INNOP
-    } register_op_e /*verilator public*/;
+    } addr_sel_e /*verilator public*/;
+    
+    typedef enum logic[1:0] {
+        MEM_NOP,
+        MEM_READ,
+        MEM_WRITE
+    } mem_ctrl_op_e /*verilator public*/;
 
     typedef enum logic{
         ALU,
@@ -91,7 +75,6 @@ package controlpack;
 
     typedef struct packed {
         alu_op_e alu_op;
-        memory_op_e memory_op;
         register_sel_e ControlSelInxD;    //selects where the data at the input will be stored to.
         register_sel_e ControlSelReg1xD;  //selects which register will be presented at the Reg1 output.
         register_sel_e ControlSelReg2xD;  //selects which register will be presented at the Reg2 output.

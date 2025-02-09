@@ -13,7 +13,7 @@ module alu_tb #(parameter DATA_BUS_WIDTH = 8) (
   );
   // Dump the signals to a VCD file. You can view it with gtkwave or surfer.
   initial begin
-    $dumpfile("alu.fst");
+    $dumpfile("alu.vcd");
     $dumpvars(0, alu_instance);
     #1;
   end

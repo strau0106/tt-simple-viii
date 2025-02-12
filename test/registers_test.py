@@ -1,22 +1,22 @@
 import cocotb
 import pytest
 from cocotb.clock import Clock
-from cocotb.triggers import RisingEdge, FallingEdge, Timer
+from cocotb.triggers import RisingEdge, RisingEdge, Timer
 from cocotb.result import TestSuccess, TestFailure
 import random
 from controlpack import REGISTERS_OP, REGISTER_SEL, DATA_BUS_WIDTH
 
 async def reset(dut):
-    dut.reset.value = 1
-    await FallingEdge(dut.clock)
     dut.reset.value = 0
-    await FallingEdge(dut.clock)
+    await RisingEdge(dut.clock)
+    dut.reset.value = 1
+    await RisingEdge(dut.clock)
 
 async def write_register(dut, reg_sel, data):
     dut.op.value = REGISTERS_OP.REG_WRITE.value
-    dut.reg_1_out_sel.value = reg_sel.value
+    dut.reg_in_sel.value = reg_sel.value
     dut.reg_data_in.value = data
-    await FallingEdge(dut.clock)
+    await RisingEdge(dut.clock)
     dut.op.value = REGISTERS_OP.REG_NOP.value
 
 async def read_registers(dut, reg_1_sel, reg_2_sel):
@@ -48,7 +48,7 @@ async def test_reset_functionality(dut):
         test_value = random.randint(0, 2**DATA_BUS_WIDTH - 1)
         await write_register(dut, reg, test_value)
 
-    await FallingEdge(dut.clock)
+    await RisingEdge(dut.clock)
 
     await reset(dut)
     
@@ -68,7 +68,7 @@ async def test_nop_operation(dut):
     dut.op.value = REGISTERS_OP.REG_NOP.value
     dut.reg_1_out_sel.value = REGISTER_SEL.REG_A.value
     dut.reg_data_in.value = 0xa
-    await FallingEdge(dut.clock)
+    await RisingEdge(dut.clock)
  
     reg_1_out, _ = await read_registers(dut, REGISTER_SEL.REG_A, REGISTER_SEL.REG_A)
     

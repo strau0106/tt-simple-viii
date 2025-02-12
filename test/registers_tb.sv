@@ -10,6 +10,7 @@ module registers_tb #(parameter DATA_BUS_WIDTH = 8) (
   input logic reset,
 
   input registers_op_e op,
+  input register_sel_e reg_in_sel,
   input register_sel_e reg_1_out_sel,
   input register_sel_e reg_2_out_sel,
 
@@ -31,6 +32,7 @@ module registers_tb #(parameter DATA_BUS_WIDTH = 8) (
 
     .op(op),
 
+    .reg_in_sel(reg_in_sel),
     .reg_1_out_sel(reg_1_out_sel),
     .reg_2_out_sel(reg_2_out_sel),
 

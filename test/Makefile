@@ -10,7 +10,7 @@
 	make -f module_test.mk MODULE_NAME=${*}
 	mv results.xml $*_results.xml
 
-all: clean alu_test registers_test mem_ctrl_test mem_unit_Test
+all: clean alu_test registers_test mem_ctrl_test mem_unit_test
 	cat *results.xml > results.xml
 
 clean:

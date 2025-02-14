@@ -1,6 +1,6 @@
 import controlpack::*;
 
-module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 8) (
+module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
   input logic clock, 
   input logic reset,
   
@@ -55,8 +55,8 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 8) (
   end
 
 
-  always_ff @(negedge clock or negedge reset) begin
-    if (reset) begin 
+  always_ff @(posedge clock or negedge reset) begin
+    if (!reset) begin 
       addrs_d[0] <= 0;
       addrs_d[1] <= 0;
     end else begin
@@ -78,6 +78,8 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 8) (
   logic start_write_q;
   logic stall_txn_q;
   logic stop_txn_q;
+  logic [7:0] bus_data_out_q, data_out_q;
+
 
   always_comb begin
     state_q = state;
@@ -86,6 +88,8 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 8) (
     start_write_q = 0;
     stall_txn_q = 0;
     stop_txn_q = 0;
+    bus_data_out_q = bus_data_out;
+    data_out_q = data_out;
 
     case (state)
       // TODO: Implement stall. 
@@ -125,8 +129,7 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 8) (
         if (op != MEM_WRITE) begin
           state_q = ST_IDLE;
           stop_txn_q = 1;
-        end
-        if (data_req) begin
+        end else if (data_req) begin
           op_done_out_q = 1;
           stop_txn_q = 1;
           state_q = ST_IDLE;
@@ -137,10 +140,23 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 8) (
 
       default: state_q = ST_IDLE;
     endcase
+
+    if (state_q == ST_DATA_READY && data_ready) begin
+      bus_data_out_q = data_in;
+    end else if (state_q == ST_IDLE) begin
+      bus_data_out_q = 0;
+    end
+
+    if (state_q == ST_WAIT_WRITE && start_write_q) begin
+      data_out_q = bus_data_in;
+    end else if (state_q == ST_IDLE) begin
+      data_out_q = 0;
+    end
+
   end
 
   always_ff @(posedge clock or negedge reset) begin
-    if (reset) begin
+    if (!reset) begin
       state <= ST_IDLE;
       bus_data_out <= 0;
       data_out <= 0;
@@ -156,20 +172,10 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 8) (
       start_write <= start_write_q;
       stall_txn <= stall_txn_q;
       stop_txn <= stop_txn_q;
-      
+      bus_data_out <= bus_data_out_q;
+      data_out <= data_out_q;
     end
-    
-    if (state_q == ST_DATA_READY && data_ready) begin
-      bus_data_out <= data_in;
-    end else if (state_q == ST_IDLE) begin
-      bus_data_out <= 0;
-    end else
  
-    if (state_q == ST_WAIT_WRITE && start_write_q) begin
-      data_out <= bus_data_in;
-    end else if (state_q == ST_IDLE) begin
-      data_out <= 0;
-    end
  end
 
 endmodule

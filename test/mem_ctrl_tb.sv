@@ -46,8 +46,7 @@ module mem_ctrl_tb #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16)
     .stop_txn(),
     .data_in(),
     .data_req(),
-    .data_ready(),
-    .busy()
- );
+    .data_ready()
+   );
 
 endmodule

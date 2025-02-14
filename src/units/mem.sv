@@ -37,8 +37,8 @@ logic data_ready;
 
 
 qspi_ctrl  qspi_ctrl_instance(
-    .clk(!clock),
-    .rstn(!reset),
+    .clk(clock),
+    .rstn(reset),
     .spi_data_in(spi_data_in),
     .spi_data_out(spi_data_out),
     .spi_data_oe(spi_data_oe),

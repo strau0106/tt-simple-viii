@@ -24,7 +24,7 @@ package controlpack;
         logic alu_carry;
     } alu_flag_t /*verilator public*/;
 
-    typedef enum logic [1:0] {
+    typedef enum logic[1:0] {
             REG_A,
             REG_B,
             REG_C,
@@ -36,13 +36,13 @@ package controlpack;
         REG_WRITE
     } registers_op_e /*verilator public*/;
 
-    typedef enum logic [2:0] {
-            IR_NOP,
+    typedef enum logic[2:0] {
+            AR_NOP,
             ABSOLUTE,
             REL_SUB,
             REL_ADD,
             INC
-    } addr_reg_op_e /*verilator public*/;
+    } addr_register_op_e /*verilator public*/;
 
     typedef enum logic {
         MAR,
@@ -55,20 +55,17 @@ package controlpack;
         MEM_WRITE
     } mem_ctrl_op_e /*verilator public*/;
 
-    typedef enum logic{
-        ALU,
-        BUS
-    } register_in_source_e /*verilator public*/;
+    typedef enum logic[1:0] {
+        MUX_ALU,
+        MUX_MEM,
+        MUX_IO
+    } mux_sel_e /*verilator public*/;
 
-    typedef enum logic{
-        ADDRESS_REGISTER,
-        CONTROL_ADDRESS //could be PC or microcode address (Controler decides)
-    } address_source_sel_e /*verilator public*/;
-
-    typedef enum logic[3:0]{
-        NOP, //Just load the next instruction.
-        LDX, //Load memory to register
-        AOP //ALU Operation (lower nibble defines operation), following byte in and out
+    typedef enum logic[1:0]{
+        NOP = 0, //Just load the next instruction.
+        ALU = 1, //ALU Operation (lower nibble defines operation), following byte in and out
+        LDX = 2, //Load memory to register
+        JMP = 3
         
     } instructions_e /*verilator public*/;
 
@@ -78,7 +75,7 @@ package controlpack;
         register_sel_e ControlSelInxD;    //selects where the data at the input will be stored to.
         register_sel_e ControlSelReg1xD;  //selects which register will be presented at the Reg1 output.
         register_sel_e ControlSelReg2xD;  //selects which register will be presented at the Reg2 output.
-        register_in_source_e SelInSourcexS; //selects either the ALU result or data on the data bus as input to the register.
+        mux_sel_e SelInSourcexS; //selects either the ALU result or data on the data bus as input to the register.
         logic reset;
         logic halt;
         logic control_unit_load; 

@@ -34,8 +34,8 @@ module registers #(parameter DATA_BUS_WIDTH = 8) (
         registers_q[reg_in_sel] = reg_data_in;
   end
 
-  always_ff @(negedge clock or negedge reset) begin
-    if (reset) begin
+  always_ff @(posedge clock or negedge reset) begin
+    if (!reset) begin
       registers_d[0] <= 0;
       registers_d[1] <= 0;
       registers_d[2] <= 0;

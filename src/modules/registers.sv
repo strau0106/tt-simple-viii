@@ -7,6 +7,7 @@ module registers #(parameter DATA_BUS_WIDTH = 8) (
   input logic reset,
 
   input registers_op_e op,
+  input register_sel_e reg_in_sel,
   input register_sel_e reg_1_out_sel,
   input register_sel_e reg_2_out_sel,
 
@@ -23,7 +24,6 @@ module registers #(parameter DATA_BUS_WIDTH = 8) (
   assign reg_2_out = registers_d[reg_2_out_sel];
 
 
- //always @(registers_d[0] or registers_d[1] or registers_d[2] or registers_d[3] or op or reg_data_in) begin
  always_comb begin
     registers_q[0] = registers_d[0];
     registers_q[1] = registers_d[1];
@@ -31,7 +31,7 @@ module registers #(parameter DATA_BUS_WIDTH = 8) (
     registers_q[3] = registers_d[3];
     
       if (op == REG_WRITE)
-        registers_q[reg_1_out_sel] = reg_data_in;
+        registers_q[reg_in_sel] = reg_data_in;
   end
 
   always_ff @(negedge clock or negedge reset) begin

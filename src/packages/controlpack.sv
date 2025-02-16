@@ -4,8 +4,7 @@
 //d efine CONTROL_WORD_WIDTH 25
 
 package controlpack;
-    typedef enum logic[3:0] {
-        ALUNOP, 
+    typedef enum logic[3:0] { 
         THR, //register1 Input feed through result.
         ADD,
         SUB,

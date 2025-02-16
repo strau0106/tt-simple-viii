@@ -33,15 +33,15 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
 
   ctrl_state state, state_q;
 
-  mem_ctrl_op_e mem_ctrl_op_q;
-  addr_register_op_e addr_reg_op_q;
-  addr_sel_e addr_sel_q;
-  alu_op_e alu_op_q;
-  registers_op_e reg_op_q;
-  register_sel_e reg_sel_in_q;
-  register_sel_e reg_sel_1_q;
-  register_sel_e reg_sel_2_q;
-  mux_sel_e mux_sel_q;
+  logic[1:0] mem_ctrl_op_q;
+  logic[2:0] addr_reg_op_q;
+  logic addr_sel_q;
+  logic[3:0] alu_op_q;
+  logic reg_op_q;
+  logic[1:0] reg_sel_in_q;
+  logic[1:0] reg_sel_1_q;
+  logic[1:0] reg_sel_2_q;
+  logic[1:0] mux_sel_q;
   logic jmp_op_addr_sel_q, jmp_op_addr_sel;
 
   always_comb begin
@@ -85,8 +85,8 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
           end
 
           ALU: begin // alu instr param0: alu_op[2:0], reg_sel_1[1:0], param1: reg_sel_2[1:0], reg_sel_in[1:0]
-            alu_op_q = alu_op_e'(bus_data_in[5:3]);
-            reg_sel_1_q = register_sel_e'(bus_data_in[2:1]);
+            alu_op_q = bus_data_in[5:3];
+            reg_sel_1_q = bus_data_in[2:1];
       
             addr_reg_op_q = INC;
             addr_sel_q = PC;
@@ -98,9 +98,9 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
               addr_sel_q = MAR;
               mux_sel_q = MUX_MEM;
               state_q = ST_LDX_WAIT_READ;
-              reg_sel_in_q = register_sel_e'(bus_data_in[4:3]);
+              reg_sel_in_q = bus_data_in[4:3];
             end else begin // reg to mem
-              reg_sel_1_q = register_sel_e'(bus_data_in[4:3]);
+              reg_sel_1_q = bus_data_in[4:3];
               alu_op_q = THR;
               mux_sel_q = MUX_ALU;
               mem_ctrl_op_q = MEM_WRITE;
@@ -111,7 +111,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
           JMP: begin // jmp instr_l param0: carry, zero, reg_sel_1[1:0], addr_sel (stored in jmp_op_addr_sel, because param1 has to be read first, which would overwrite it again), param1: addr_reg_op[2:0]
             if (alu_flags.alu_carry != bus_data_in[5] && alu_flags.alu_zero != bus_data_in[4]) state_q = ST_INC_PC;
             else begin 
-              reg_sel_1_q = register_sel_e'(bus_data_in[3:2]);
+              reg_sel_1_q = bus_data_in[3:2];
               jmp_op_addr_sel_q =  bus_data_in[1];
               addr_reg_op_q = INC;
               addr_sel_q = PC;
@@ -128,12 +128,12 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
       mem_ctrl_op_q = MEM_READ;
       addr_sel_q = PC;
       mux_sel_q = MUX_MEM;
-      alu_op_q = alu_op_e'(alu_op); // preserve alu_op from decode
-      reg_sel_1_q = register_sel_e'(reg_sel_1); // preserve reg_sel_1 from decode
+      alu_op_q = alu_op; // preserve alu_op from decode
+      reg_sel_1_q = reg_sel_1; // preserve reg_sel_1 from decode
       if (mem_op_done) begin
         // bus_data_in is param1
-        reg_sel_2_q = register_sel_e'(bus_data_in[7:6]);
-        reg_sel_in_q = register_sel_e'(bus_data_in[5:4]);
+        reg_sel_2_q = bus_data_in[7:6];
+        reg_sel_in_q = bus_data_in[5:4];
 
         mem_ctrl_op_q = MEM_NOP;
         mux_sel_q = MUX_ALU;
@@ -151,7 +151,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
       end
     end
     ST_LDX_WAIT_WRITE: begin
-      reg_sel_1_q = register_sel_e'(reg_sel_1);
+      reg_sel_1_q = reg_sel_1;
       alu_op_q = THR;
       mux_sel_q = MUX_ALU;
       mem_ctrl_op_q = MEM_WRITE;
@@ -167,8 +167,8 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
       jmp_op_addr_sel_q = jmp_op_addr_sel;
       if (mem_op_done) begin
         // bus_data_in is param1
-        addr_sel_q = addr_sel_e'(jmp_op_addr_sel);
-        addr_reg_op_q = addr_register_op_e'(bus_data_in[7:5]);
+        addr_sel_q = jmp_op_addr_sel;
+        addr_reg_op_q = bus_data_in[7:5];
         state_q = ST_INC_PC;
       end
       

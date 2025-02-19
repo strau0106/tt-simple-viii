@@ -1,5 +1,3 @@
-import controlpack::*;
-
 module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
   input logic clock, 
   input logic reset,

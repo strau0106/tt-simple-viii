@@ -1,4 +1,3 @@
-import controlpack::*;
 // icarus does not properly support
 // 1800-2012 IEEE :(
 // TODO: Retest for loops for array assignments/other solution

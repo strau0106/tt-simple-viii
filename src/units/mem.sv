@@ -55,7 +55,9 @@ qspi_ctrl  qspi_ctrl_instance(
     .data_out(data_qo_mi),
     .data_req(data_req),
     .data_ready(data_ready),
+    /* verilator lint_off PINCONNECTEMPTY */
     .busy()
+    /* verilator lint_on PINCONNECTEMPTY */
 );
 
 

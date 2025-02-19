@@ -1,5 +1,4 @@
-
-import controlpack::*;
+/* verilator lint_off ENUMVALUE */
 
 module ctrl #(parameter DATA_BUS_WIDTH = 8)(
   input logic clock,

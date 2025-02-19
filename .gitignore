@@ -6,3 +6,8 @@ logs/*
 *.fst
 *.vcd
 cmake*/*
+tt
+runs
+src/config_merged.json
+src/user_config.json
+gds_render*

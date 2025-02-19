@@ -85,9 +85,9 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
             state_q = ST_INC_PC;
           end
 
-          ALU: begin // alu instr param0: alu_op[2:0], reg_sel_1[1:0], param1: reg_sel_2[1:0], reg_sel_in[1:0]
-            alu_op_q = bus_data_in[5:3];
-            reg_sel_1_q = bus_data_in[2:1];
+          ALU: begin // alu instr param0: alu_op[3:0], reg_sel_1[1:0], param1: reg_sel_2[1:0], reg_sel_in[1:0]
+            alu_op_q = bus_data_in[5:2];
+            reg_sel_1_q = bus_data_in[1:0];
       
             addr_reg_op_q = INC;
             addr_sel_q = PC;

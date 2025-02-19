@@ -1,23 +1,17 @@
-// Section 1.3.1: Arithmetic Logic Unit
-import controlpack ::*;
-
 module alu #(parameter DATA_BUS_WIDTH = 8)
 (
     input alu_op_e op,
     input logic[DATA_BUS_WIDTH-1:0] register1,
     input logic[DATA_BUS_WIDTH-1:0] register2,
     output logic[DATA_BUS_WIDTH-1:0] result,
-    output alu_flag_t flag
+    output logic is_zero, 
+    output logic is_carry
 );
 
     logic[DATA_BUS_WIDTH:0] tmp;
-    logic is_zero;
-    logic is_carry;
 
     always_comb begin
     //Default asignments (make sure that every signal has a value at any time in order to avoid latches)
-    flag.alu_carry = 0;
-    flag.alu_zero = 0;
     tmp = 0;
     is_carry = 0;
     is_zero = 0;
@@ -88,7 +82,5 @@ module alu #(parameter DATA_BUS_WIDTH = 8)
       if (!(op == NOP)) 
         is_zero = 1;
     end
-    flag.alu_carry = is_carry;
-    flag.alu_zero = is_zero;
   end
 endmodule

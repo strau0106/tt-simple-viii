@@ -17,8 +17,9 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
 
   input logic[DATA_BUS_WIDTH-1:0] bus_data_in,
   input logic mem_op_done,
-  input alu_flag_t alu_flags
-);
+  input logic flag_carry,
+  input logic flag_zero
+  );
   
   typedef enum logic[3:0] {
     ST_FETCH,
@@ -109,7 +110,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
             end 
           end
           JMP: begin // jmp instr_l param0: carry, zero, reg_sel_1[1:0], addr_sel (stored in jmp_op_addr_sel, because param1 has to be read first, which would overwrite it again), param1: addr_reg_op[2:0]
-            if (alu_flags.alu_carry != bus_data_in[5] && alu_flags.alu_zero != bus_data_in[4]) state_q = ST_INC_PC;
+            if (flag_carry != bus_data_in[5] && flag_zero != bus_data_in[4]) state_q = ST_INC_PC;
             else begin 
               reg_sel_1_q = bus_data_in[3:2];
               jmp_op_addr_sel_q =  bus_data_in[1];

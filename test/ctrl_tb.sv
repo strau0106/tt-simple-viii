@@ -19,7 +19,8 @@ module ctrl_tb #(parameter DATA_BUS_WIDTH = 8) (
 
   input logic[DATA_BUS_WIDTH-1:0] bus_data_in,
   input logic mem_op_done,
-  input alu_flag_t alu_flags
+  input flag_zero,
+  input flag_carry
   );
   // Dump the signals to a VCD file. You can view it with gtkwave or surfer.
   initial begin
@@ -44,7 +45,8 @@ module ctrl_tb #(parameter DATA_BUS_WIDTH = 8) (
 
     .bus_data_in(bus_data_in),
     .mem_op_done(mem_op_done),
-    .alu_flags(alu_flags)
+    .flag_zero(flag_zero),
+    .flag_carry(flag_carry)
 
 );
 

@@ -26,7 +26,8 @@ async def test_turing_req_2111_arithmetics(dut):
 
         await advance_sim(dut)
         assert dut.result.value == param.expected_result, f"Failed: {param.test_name}"
-        assert dut.flag.value == (param.expected_zero << 1) + param.expected_carry, f"Failed: {param.test_name}"
+        assert dut.is_zero.value == param.expected_zero, f"Failed: {param.test_name}"
+        assert dut.is_carry.value == param.expected_carry, f"Failed: {param.test_name}"
 
 @cocotb.test()
 async def test_feature_req_2114_logic(dut):
@@ -59,7 +60,8 @@ async def test_feature_req_2114_logic(dut):
 
         await advance_sim(dut)
         assert dut.result.value == param.expected_result, f"Failed: {param.test_name}"
-        assert dut.flag.value == (param.expected_zero << 1) + param.expected_carry, f"Failed: {param.test_name}"
+        assert dut.is_zero.value == param.expected_zero, f"Failed: {param.test_name}"
+        assert dut.is_carry.value == param.expected_carry, f"Failed: {param.test_name}"
 
 @cocotb.test()
 async def test_feature_req_2115_shift(dut):
@@ -92,4 +94,5 @@ async def test_feature_req_2115_shift(dut):
 
         await advance_sim(dut)
         assert dut.result.value == param.expected_result, f"Failed: {param.test_name}"
-        assert dut.flag.value == (param.expected_zero << 1) + param.expected_carry, f"Failed: {param.test_name}"
+        assert dut.is_zero.value == param.expected_zero, f"Failed: {param.test_name}"
+        assert dut.is_carry.value == param.expected_carry, f"Failed: {param.test_name}"

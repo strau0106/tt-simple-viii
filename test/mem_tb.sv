@@ -3,7 +3,6 @@
 /* This testbench just instantiates the module and makes some convenient wires
    that can be driven / tested by the cocotb test.py.
 */
-import controlpack::*;
 module mem_tb #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
   input logic clock, 
   input logic reset,

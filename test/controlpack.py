@@ -1,18 +1,17 @@
 from enum import Enum 
 
 class ALU_OP(Enum):
-        ALUNOP = 0
-        THR = 1
-        ADD = 2
-        SUB = 3
-        SHL = 4
-        ROL = 5
-        SHR = 6
-        ROR = 7
-        AND = 8
-        OR = 9
-        XOR = 0x0a
-        NOT = 0x0b
+        THR = 0
+        ADD = 1
+        SUB = 2
+        SHL = 3
+        ROL = 4
+        SHR = 5
+        ROR = 6
+        AND = 7
+        OR = 8
+        XOR = 9
+        NOT = 10
 
 DATA_BUS_WIDTH = 8 
 NUM_REGISTERS = 4 

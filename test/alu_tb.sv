@@ -3,7 +3,6 @@
 /* This testbench just instantiates the module and makes some convenient wires
    that can be driven / tested by the cocotb test.py.
 */
-import controlpack::*;
 module alu_tb #(parameter DATA_BUS_WIDTH = 8) (
     input alu_op_e op,
     input logic[DATA_BUS_WIDTH-1:0] register1,

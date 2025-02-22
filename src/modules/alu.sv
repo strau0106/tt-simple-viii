@@ -78,9 +78,6 @@ module alu #(parameter DATA_BUS_WIDTH = 8)
     result = tmp[DATA_BUS_WIDTH-1:0];
     
     if (result == 0) 
-    begin
-      if (!(op == NOP)) 
         is_zero = 1;
-    end
   end
 endmodule

@@ -2,7 +2,7 @@
 # See https://docs.cocotb.org/en/stable/quickstart.html for more info
 
 WAVES ?= 1
-SIM ?= verilator
+SIM ?= icarus
 SRC_DIR = $(PWD)/../src
 MODULE_NAME ?= cpu
 PROG_FILE = cpu_test.hex

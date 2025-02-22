@@ -2,7 +2,7 @@
 # See https://docs.cocotb.org/en/stable/quickstart.html for more info
 
 WAVES ?= 1
-SIM ?= verilator
+SIM ?= icarus
 SRC_DIR = $(PWD)/../src
 MODULE_NAME ?= alu
 PROJECT_SOURCES = packages/* modules/$(MODULE_NAME).sv

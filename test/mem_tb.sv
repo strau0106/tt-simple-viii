@@ -9,7 +9,7 @@ module mem_tb #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
   
   // CPU Interface
   input mem_ctrl_op_e op,
-  input addr_reg_op_e addr_reg_op,
+  input addr_register_op_e addr_reg_op,
   input addr_sel_e addr_sel,
   
   input logic[DATA_BUS_WIDTH-1:0] bus_data_in,

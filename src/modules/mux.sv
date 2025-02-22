@@ -3,7 +3,7 @@ module mux (
   input [7:0] alu_in,
   input [7:0] mem_in,
   input [7:0] i_o_in,
-  output [7:0] out
+  output logic [7:0] out
 );
 
   always_comb begin

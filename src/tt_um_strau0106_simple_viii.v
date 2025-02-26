@@ -5,7 +5,7 @@
 
 `default_nettype none
 
-module tt_um_strau0106_cpu #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
+module tt_um_strau0106_simple_viii #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
     input  wire [7:0] uio_in,   // IOs: Input path

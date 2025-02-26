@@ -68,7 +68,7 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
     ST_WAIT_READ,
     ST_DATA_READY,
     ST_WAIT_WRITE
-  } mem_ctrl_state_t;
+  } mem_ctrl_state_t /*verilator public*/;
 
   mem_ctrl_state_t state, state_q;
   logic op_done_out_q;

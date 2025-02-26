@@ -29,7 +29,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
     ST_LDX_WAIT_WRITE,
     ST_JMP_WAIT_PARAM_READ,
     ST_INC_PC
-  } ctrl_state;
+  } ctrl_state /*verilator public*/;
 
   ctrl_state state, state_q;
 

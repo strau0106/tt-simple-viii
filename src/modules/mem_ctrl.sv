@@ -115,7 +115,7 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
 
       ST_DATA_READY: begin
         stall_txn_q = 1;
-        op_done_out_q = 1;
+        op_done_out_q = 0;
         if (op != MEM_READ) begin
           state_q = ST_IDLE;
           stop_txn_q = 1;

@@ -78,7 +78,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
       mux_sel_q = MUX_MEM;
 
       if (mem_op_done) begin
-
+        mem_ctrl_op_q = MEM_NOP;
         case (bus_data_in[7:6])
           NOP: begin
             state_q = ST_INC_PC;
@@ -94,7 +94,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
           end
           LDX: begin // ldx instr_l param0: dir, reg_sel_1[1:0]
             if (bus_data_in[5]) begin // mem to reg
-              mem_ctrl_op_q = MEM_READ;
+              mem_ctrl_op_q = MEM_NOP;
               addr_sel_q = MAR;
               mux_sel_q = MUX_MEM;
               state_q = ST_LDX_WAIT_READ;

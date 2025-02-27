@@ -93,7 +93,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
             state_q = ST_ALU_OP;
           end
           LDX: begin // ldx instr_l param0: dir, reg_sel_1[1:0]
-            if (bus_data_in[5]) begin // mem to reg
+            if (!bus_data_in[5]) begin // mem to reg
               mem_ctrl_op_q = MEM_NOP;
               addr_sel_q = MAR;
               mux_sel_q = MUX_MEM;

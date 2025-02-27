@@ -1,0 +1,4 @@
+68 // AOP; NOT; REG A; REG A
+10 // REG B;
+A8 // LDX; reg2mem; REG B; 00
+98 // LDX; mem2reg; REG D; 00

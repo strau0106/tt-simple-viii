@@ -51,12 +51,18 @@ module top_tb #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
   assign uio_in = {2'b00, spi_data_out[3:2], 1'b0, spi_data_out[1:0], 1'b0}; // look for bugs
   
   //spi_data_out = {uio_in[5:4], uio_in[2:1]};
+  
+  `ifdef GL_PNL_TEST
+  wire VPWR = 1'b1;
+  wire VGND = 1'b0;
+  `endif
+
 
   tt_um_strau0106_simple_viii #(DATA_BUS_WIDTH, ADDRESS_WIDTH) cpu_instance (
         // powerpins for gate level simulation
     `ifdef GL_PNL_TEST
-      .VPWR(1'b1),
-      .VGND(1'b0),
+      .VPWR(VPWR),
+      .VGND(VGND),
     `endif
     .ui_in(),
     .uo_out(bus_data),

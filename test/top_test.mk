@@ -44,7 +44,7 @@ VERILOG_SOURCES += $(PDK_ROOT)/sky130A/libs.ref/sky130_fd_sc_hd/verilog/sky130_f
 
 
 
-VERILOG_SOURCES += ../runs/wokwi/final/$(NL)/tt_um_strau0106_simple_viii.v
+VERILOG_SOURCES += ../runs/wokwi/final/$(NL)/tt_um_strau0106_simple_viii.$(NL).v
 
 endif
 

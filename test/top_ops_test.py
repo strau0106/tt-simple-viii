@@ -11,5 +11,5 @@ async def top_alu_test(dut):
   await RisingEdge(dut.clock)
   dut.reset.value = 1
   
-  for _ in range(200):
+  for _ in range(300):
     await RisingEdge(dut.clock)

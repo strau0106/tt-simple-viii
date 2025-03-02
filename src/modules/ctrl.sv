@@ -25,7 +25,8 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
     ST_DECODE,
     ST_ALU_OP,
     ST_LDX_OP,
-    ST_LDX_WAIT_READ,
+    ST_LDX_WAIT_RAM_READ,
+    ST_LDX_WAIT_FLASH_READ,
     ST_LDX_WAIT_WRITE,
     ST_JMP_WAIT_PARAM_READ,
     ST_INC_PC
@@ -92,22 +93,34 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
             addr_sel_q = PC;
             state_q = ST_ALU_OP;
           end
-          LDX: begin // ldx instr_l param0: dir, reg_sel_1[1:0]
-            if (!bus_data_in[5]) begin // mem to reg
+          LDX: begin // ldx instr_l param0: ldxop, reg_sel_1[1:0]
+            case (bus_data_in[5:4]) // mem to reg
+             RAM2REG: begin 
               mem_ctrl_op_q = MEM_NOP;
               addr_sel_q = MAR;
               mux_sel_q = MUX_MEM;
-              state_q = ST_LDX_WAIT_READ;
-              reg_sel_in_q = bus_data_in[4:3];
-            end else begin // reg to mem
-              reg_sel_1_q = bus_data_in[4:3];
+              state_q = ST_LDX_WAIT_RAM_READ;
+              reg_sel_in_q = bus_data_in[3:2];
+             end
+            REG2RAM: begin // reg to mem
+              reg_sel_1_q = bus_data_in[3:2];
               alu_op_q = THR;
               mux_sel_q = MUX_ALU;
               mem_ctrl_op_q = MEM_WRITE;
               addr_sel_q = MAR;
               state_q = ST_LDX_WAIT_WRITE;
             end 
-          end
+            FLASH2REG: begin // flash to reg
+              mem_ctrl_op_q = MEM_NOP;
+              addr_sel_q = PC;
+              addr_reg_op_q = INC;
+              mux_sel_q = MUX_MEM;
+              state_q = ST_LDX_WAIT_FLASH_READ;
+              reg_sel_in_q = bus_data_in[3:2];
+            end
+            default: state_q = ST_INC_PC;
+            endcase
+          end 
           JMP: begin // jmp instr_l param0: carry, zero, reg_sel_1[1:0], addr_sel (stored in jmp_op_addr_sel, because param1 has to be read first, which would overwrite it again), param1: addr_reg_op[2:0]
             if (flag_carry != bus_data_in[5] && flag_zero != bus_data_in[4]) state_q = ST_INC_PC;
             else begin 
@@ -141,9 +154,18 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
         state_q = ST_INC_PC;
       end
     end
-    ST_LDX_WAIT_READ: begin
+    ST_LDX_WAIT_RAM_READ: begin
       mem_ctrl_op_q = MEM_READ;
       addr_sel_q = MAR;
+      mux_sel_q = MUX_MEM;
+      if (mem_op_done) begin
+        reg_op_q = REG_WRITE;
+        state_q = ST_INC_PC;
+      end
+    end
+    ST_LDX_WAIT_FLASH_READ: begin
+      mem_ctrl_op_q = MEM_READ;
+      addr_sel_q = PC;
       mux_sel_q = MUX_MEM;
       if (mem_op_done) begin
         reg_op_q = REG_WRITE;

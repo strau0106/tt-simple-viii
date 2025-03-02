@@ -62,3 +62,8 @@ typedef enum logic[1:0]{
     
 } instructions_e /*verilator public*/;
 
+typedef enum logic [1:0] {
+    REG2RAM,
+    RAM2REG,
+    FLASH2REG
+} ldx_op_e /*verilator public*/;

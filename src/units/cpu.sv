@@ -103,8 +103,8 @@ ctrl ctrl_instance (
   .mux_sel(mux_sel),
   .bus_data_in(bus_data),
   .mem_op_done(op_done),
-  .flag_zero(flag_zero),
-  .flag_carry(flag_carry)
+  .flag_zero_in(flag_zero),
+  .flag_carry_in(flag_carry)
 );
 
 

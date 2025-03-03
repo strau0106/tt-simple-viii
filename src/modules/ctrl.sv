@@ -16,8 +16,8 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
 
   input logic[DATA_BUS_WIDTH-1:0] bus_data_in,
   input logic mem_op_done,
-  input logic flag_carry,
-  input logic flag_zero
+  input logic flag_carry_in,
+  input logic flag_zero_in
   );
   
   typedef enum logic[3:0] {
@@ -44,6 +44,8 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
   logic[1:0] reg_sel_2_q;
   logic[1:0] mux_sel_q;
   logic jmp_op_addr_sel_q, jmp_op_addr_sel;
+  logic flag_carry_q, flag_carry;
+  logic flag_zero_q, flag_zero;
 
   always_comb begin
     state_q = state;
@@ -57,6 +59,8 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
     reg_sel_2_q = REG_A;
     mux_sel_q = MUX_ALU;
     jmp_op_addr_sel_q = 0;
+    flag_zero_q = flag_zero;
+    flag_carry_q = flag_carry;
 
     case (state)
     default: state_q = ST_FETCH;
@@ -152,6 +156,8 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
         mux_sel_q = MUX_ALU;
         reg_op_q = REG_WRITE;
         state_q = ST_INC_PC;
+        flag_carry_q = flag_carry_in;
+        flag_zero_q = flag_zero_in;
       end
     end
     ST_LDX_WAIT_RAM_READ: begin
@@ -215,7 +221,8 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
       reg_sel_2 <= REG_A;
       mux_sel <= MUX_ALU;
       jmp_op_addr_sel <= 0;
-
+      flag_carry <= 0;
+      flag_zero <= 0;
     end else begin
       state <= state_q;
       mem_ctrl_op <= mem_ctrl_op_q;
@@ -228,6 +235,8 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
       reg_sel_2 <= reg_sel_2_q;
       mux_sel <= mux_sel_q;
       jmp_op_addr_sel <= jmp_op_addr_sel_q;
+      flag_carry <= flag_carry_q;
+      flag_zero <= flag_zero_q;
     end
   end
 

@@ -2,4 +2,10 @@
 84 // LDX; reg2ram; REG B; 00
 9C // LDX; ram2reg; REG D; 00
 A8 5F // LDX; flash2reg; REG C; 00; 5F
-
+A8 03 // LDX; flash2reg; REG C; 00; 03
+CA 60 // JMP; no carry no zero; REG C; PC; 0; REL_ADD; 00000
+00
+00
+00
+C8 60 // JMP; no carry no zero; REG C; MAR; 0; REL_ADD; 00000
+88 // LDX; reg2ram; REG B; 00

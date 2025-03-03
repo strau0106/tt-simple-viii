@@ -285,7 +285,7 @@ module qspi_ctrl (
     initial assume(spi_flash_select);
     initial assume(spi_ram_a_select);
     initial assume(spi_ram_b_select);
-    always @(posedge clk) begin
+    always @(posedge clk or negedge rstn) begin
         // update past_valid reg so we know it's safe to use $past()
         f_past_valid <= {f_past_valid[0], 1'b1};
 

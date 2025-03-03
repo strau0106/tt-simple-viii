@@ -15,10 +15,7 @@ COMPILE_ARGS +=  -DPROG_FILE=\"$(PROG_FILE)\"
 
 COMPILE_ARGS +=  -DDUMPFILE=\"$(DUMPFILE)\"
 
-COMPILE_ARGS +=  -DBIN=\"ye\"
-
 ifneq ($(GATES),yes)
-
 ifneq ($(SYNTH),yes)
 
 # RTL simulation:
@@ -33,7 +30,7 @@ NL ?= nl
 
 SIM_BUILD				= sim_build/top_synth
 COMPILE_ARGS    += -DGL_TEST
-ifeq ($(nl),pnl) 
+ifeq ($(NL),pnl) 
 COMPILE_ARGS    += -DGL_PNL_TEST
 COMPILE_ARGS		+= -DUSE_POWER_PINS
 endif

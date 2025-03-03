@@ -45,8 +45,8 @@ module ctrl_tb #(parameter DATA_BUS_WIDTH = 8) (
 
     .bus_data_in(bus_data_in),
     .mem_op_done(mem_op_done),
-    .flag_zero(flag_zero),
-    .flag_carry(flag_carry)
+    .flag_zero_in(flag_zero),
+    .flag_carry_in(flag_carry)
 
 );
 

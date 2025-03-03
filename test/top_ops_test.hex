@@ -1,5 +1,5 @@
-68 // AOP; NOT; REG A; REG A
-10 // REG B;
+68 10// AOP; NOT; REG A; REG A; REG B;
 84 // LDX; reg2ram; REG B; 00
 9C // LDX; ram2reg; REG D; 00
 A8 5F // LDX; flash2reg; REG C; 00; 5F
+

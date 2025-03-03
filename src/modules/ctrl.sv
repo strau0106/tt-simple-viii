@@ -195,10 +195,13 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
       addr_sel_q = PC;
       mux_sel_q = MUX_MEM;
       jmp_op_addr_sel_q = jmp_op_addr_sel;
+      reg_sel_1_q = reg_sel_1;
+      alu_op_q = THR;
       if (mem_op_done) begin
         // bus_data_in is param1
         addr_sel_q = jmp_op_addr_sel;
         addr_reg_op_q = bus_data_in[7:5];
+        mux_sel_q = MUX_ALU;
         state_q = ST_INC_PC;
       end
       

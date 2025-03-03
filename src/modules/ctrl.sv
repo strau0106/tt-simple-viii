@@ -164,6 +164,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
       mem_ctrl_op_q = MEM_READ;
       addr_sel_q = MAR;
       mux_sel_q = MUX_MEM;
+      reg_sel_in_q = reg_sel_in;
       if (mem_op_done) begin
         reg_op_q = REG_WRITE;
         state_q = ST_INC_PC;
@@ -173,6 +174,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
       mem_ctrl_op_q = MEM_READ;
       addr_sel_q = PC;
       mux_sel_q = MUX_MEM;
+      reg_sel_in_q = reg_sel_in;
       if (mem_op_done) begin
         reg_op_q = REG_WRITE;
         state_q = ST_INC_PC;

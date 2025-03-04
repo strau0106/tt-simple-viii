@@ -16,36 +16,36 @@ module registers #(parameter DATA_BUS_WIDTH = 8) (
   output logic[DATA_BUS_WIDTH-1:0] reg_2_out
 );
   
-  logic[DATA_BUS_WIDTH-1:0] registers_q[4]; // Intermediate state of the registers
+  logic[DATA_BUS_WIDTH-1:0] registers[4];
   logic[DATA_BUS_WIDTH-1:0] registers_d[4]; 
 
-  assign reg_1_out = registers_d[reg_1_out_sel];
-  assign reg_2_out = registers_d[reg_2_out_sel];
+  assign reg_1_out = registers[reg_1_out_sel];
+  assign reg_2_out = registers[reg_2_out_sel];
 
 
  always_comb begin
-    registers_q[0] = registers_d[0];
-    registers_q[1] = registers_d[1];
-    registers_q[2] = registers_d[2];
-    registers_q[3] = registers_d[3];
+    registers_d[0] = registers[0];
+    registers_d[1] = registers[1];
+    registers_d[2] = registers[2];
+    registers_d[3] = registers[3];
     
       if (op == REG_WRITE)
-        registers_q[reg_in_sel] = reg_data_in;
+        registers_d[reg_in_sel] = reg_data_in;
   end
 
   always_ff @(posedge clock) begin
     if (!reset) begin
-      registers_d[0] <= 0;
-      registers_d[1] <= 0;
-      registers_d[2] <= 0;
-      registers_d[3] <= 0;
+      registers[0] <= 0;
+      registers[1] <= 0;
+      registers[2] <= 0;
+      registers[3] <= 0;
 
     end else begin
       // iverilog...
-      registers_d[0] <= registers_q[0];
-      registers_d[1] <= registers_q[1];
-      registers_d[2] <= registers_q[2];
-      registers_d[3] <= registers_q[3];
+      registers[0] <= registers_d[0];
+      registers[1] <= registers_d[1];
+      registers[2] <= registers_d[2];
+      registers[3] <= registers_d[3];
     
     end
   end

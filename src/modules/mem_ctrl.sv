@@ -25,41 +25,41 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
 
 );
   // Address Register
-  logic[ADDRESS_WIDTH-1:0] addrs_q[2]; // Intermediate state of the registers
-  logic[ADDRESS_WIDTH-1:0] addrs_d[2];
+  logic[ADDRESS_WIDTH-1:0] addrs_d[2]; // Intermediate state of the registers
+  logic[ADDRESS_WIDTH-1:0] addrs[2];
 
-  assign addr_out = {(addr_sel == PC) ? 2'b00 : 2'b10, 7'b0, addrs_d[addr_sel]};
+  assign addr_out = {(addr_sel == PC) ? 2'b00 : 2'b10, 7'b0, addrs[addr_sel]};
 
   logic[ADDRESS_WIDTH-1:0] addr_in;
   assign addr_in = {8'b0, bus_data_in};
 
   always_comb begin
-    addrs_q[0] = addrs_d[0];
-    addrs_q[1] = addrs_d[1];
+    addrs_d[0] = addrs[0];
+    addrs_d[1] = addrs[1];
     
 
     case (addr_reg_op)
       default:
         ;
       ABSOLUTE:
-        addrs_q[addr_sel] = addr_in;
+        addrs_d[addr_sel] = addr_in;
       REL_SUB:
-        addrs_q[addr_sel] = addrs_q[addr_sel] - addr_in;
+        addrs_d[addr_sel] = addrs_d[addr_sel] - addr_in;
       REL_ADD:
-        addrs_q[addr_sel] = addrs_q[addr_sel] + addr_in;
+        addrs_d[addr_sel] = addrs_d[addr_sel] + addr_in;
       INC:
-        addrs_q[addr_sel] = addrs_q[addr_sel] + 1;
+        addrs_d[addr_sel] = addrs_d[addr_sel] + 1;
       endcase
   end
 
 
   always_ff @(posedge clock) begin
     if (!reset) begin 
-      addrs_d[0] <= 0;
-      addrs_d[1] <= 0;
+      addrs[0] <= 0;
+      addrs[1] <= 0;
     end else begin
-      addrs_d[0] <= addrs_q[0];
-      addrs_d[1] <= addrs_q[1];
+      addrs[0] <= addrs_d[0];
+      addrs[1] <= addrs_d[1];
     end
   end
 
@@ -70,85 +70,85 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
     ST_WAIT_WRITE
   } mem_ctrl_state_t /*verilator public*/;
 
-  mem_ctrl_state_t state, state_q;
-  logic op_done_out_q;
-  logic start_read_q;
-  logic start_write_q;
-  logic stall_txn_q;
-  logic stop_txn_q;
-  logic [7:0] bus_data_out_q, data_out_q;
+  mem_ctrl_state_t state, state_d;
+  logic op_done_out_d;
+  logic start_read_d;
+  logic start_write_d;
+  logic stall_txn_d;
+  logic stop_txn_d;
+  logic [7:0] bus_data_out_d, data_out_d;
 
 
   always_comb begin
-    state_q = state;
-    op_done_out_q = 0;
-    start_read_q= 0;
-    start_write_q = 0;
-    stall_txn_q = 0;
-    stop_txn_q = 0;
-    bus_data_out_q = bus_data_out;
-    data_out_q = data_out;
+    state_d = state;
+    op_done_out_d = 0;
+    start_read_d= 0;
+    start_write_d = 0;
+    stall_txn_d = 0;
+    stop_txn_d = 0;
+    bus_data_out_d = bus_data_out;
+    data_out_d = data_out;
 
     case (state)
       // TODO: Implement stall. 
       ST_IDLE: begin
         if (op == MEM_READ) begin
-          start_read_q = 1;
-          state_q = ST_WAIT_READ;
+          start_read_d = 1;
+          state_d = ST_WAIT_READ;
         end else if (op == MEM_WRITE) begin
-          start_write_q = 1;
-          state_q = ST_WAIT_WRITE;
+          start_write_d = 1;
+          state_d = ST_WAIT_WRITE;
         end
       end
 
       ST_WAIT_READ: begin
         
         if (op != MEM_READ) begin
-          state_q = ST_IDLE;
-          stop_txn_q = 1;
+          state_d = ST_IDLE;
+          stop_txn_d = 1;
         end
         if (data_ready) begin
-          op_done_out_q = 1;
-          state_q = ST_DATA_READY;
+          op_done_out_d = 1;
+          state_d = ST_DATA_READY;
         end
       end
 
       ST_DATA_READY: begin
-        stall_txn_q = 1;
-        op_done_out_q = 0;
+        stall_txn_d = 1;
+        op_done_out_d = 0;
         if (op != MEM_READ) begin
-          state_q = ST_IDLE;
-          stop_txn_q = 1;
+          state_d = ST_IDLE;
+          stop_txn_d = 1;
         end
       end
 
 
       ST_WAIT_WRITE: begin
         if (op != MEM_WRITE) begin
-          state_q = ST_IDLE;
-          stop_txn_q = 1;
+          state_d = ST_IDLE;
+          stop_txn_d = 1;
         end else if (data_req) begin
-          op_done_out_q = 1;
-          stop_txn_q = 1;
-          state_q = ST_IDLE;
+          op_done_out_d = 1;
+          stop_txn_d = 1;
+          state_d = ST_IDLE;
         end
       end
 
 
 
-      default: state_q = ST_IDLE;
+      default: state_d = ST_IDLE;
     endcase
 
-    if (state_q == ST_DATA_READY && data_ready) begin
-      bus_data_out_q = data_in;
-    end else if (state_q == ST_IDLE) begin
-      bus_data_out_q = 0;
+    if (state_d == ST_DATA_READY && data_ready) begin
+      bus_data_out_d = data_in;
+    end else if (state_d == ST_IDLE) begin
+      bus_data_out_d = 0;
     end
 
-    if (state_q == ST_WAIT_WRITE && start_write_q) begin
-      data_out_q = bus_data_in;
-    end else if (state_q == ST_IDLE) begin
-      data_out_q = 0;
+    if (state_d == ST_WAIT_WRITE && start_write_d) begin
+      data_out_d = bus_data_in;
+    end else if (state_d == ST_IDLE) begin
+      data_out_d = 0;
     end
 
   end
@@ -164,14 +164,14 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
       stall_txn <= 0;
       stop_txn <= 0;
     end else begin
-      state <= state_q;
-      op_done_out <= op_done_out_q;
-      start_read <= start_read_q;
-      start_write <= start_write_q;
-      stall_txn <= stall_txn_q;
-      stop_txn <= stop_txn_q;
-      bus_data_out <= bus_data_out_q;
-      data_out <= data_out_q;
+      state <= state_d;
+      op_done_out <= op_done_out_d;
+      start_read <= start_read_d;
+      start_write <= start_write_d;
+      stall_txn <= stall_txn_d;
+      stop_txn <= stop_txn_d;
+      bus_data_out <= bus_data_out_d;
+      data_out <= data_out_d;
     end
  
  end

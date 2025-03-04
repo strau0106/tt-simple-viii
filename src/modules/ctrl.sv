@@ -20,7 +20,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
   input logic flag_zero_in
   );
   
-  typedef enum logic[2:0] {
+  typedef enum logic[3:0] {
     ST_FETCH,
     ST_DECODE,
     ST_ALU_OP,

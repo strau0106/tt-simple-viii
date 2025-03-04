@@ -53,7 +53,7 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
   end
 
 
-  always_ff @(posedge clock or negedge reset) begin
+  always_ff @(posedge clock) begin
     if (!reset) begin 
       addrs_d[0] <= 0;
       addrs_d[1] <= 0;
@@ -153,7 +153,7 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
 
   end
 
-  always_ff @(posedge clock or negedge reset) begin
+  always_ff @(posedge clock) begin
     if (!reset) begin
       state <= ST_IDLE;
       bus_data_out <= 0;

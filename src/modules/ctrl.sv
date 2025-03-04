@@ -213,7 +213,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
 
   end
 
-  always @(posedge clock or negedge reset) begin
+  always_ff @(posedge clock) begin
     if (!reset) begin
       state <= ST_FETCH;
       mem_ctrl_op <= MEM_NOP;

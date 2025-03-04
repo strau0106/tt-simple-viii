@@ -4,7 +4,7 @@ from cocotb.triggers import RisingEdge
 
 @cocotb.test()
 async def top_alu_test(dut):
-  clock = Clock(dut.clock, 2, units="ps") 
+  clock = Clock(dut.clock, 2, units="ns") 
   cocotb.start_soon(clock.start())
 
   dut.reset.value = 0

@@ -4,7 +4,7 @@ from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge, RisingEdge, Timer
 from cocotb.result import TestSuccess, TestFailure
 import random
-from controlpack import REGISTERS_OP, REGISTER_SEL, DATA_BUS_WIDTH
+from lib.controlpack import REGISTERS_OP, REGISTER_SEL, DATA_BUS_WIDTH
 
 async def reset(dut):
     dut.reset.value = 0

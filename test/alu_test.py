@@ -1,6 +1,6 @@
 import cocotb
 import pytest
-from controlpack import ALU_OP
+from lib.controlpack import ALU_OP
 from utils import advance_sim
 from collections import namedtuple
 

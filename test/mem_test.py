@@ -4,7 +4,7 @@ from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge, RisingEdge, Timer
 from cocotb.result import TestSuccess, TestFailure
 import random
-from controlpack import MEM_CTRL_OP, ADDR_SEL, ADDR_REG_OP, DATA_BUS_WIDTH
+from lib.controlpack import MEM_CTRL_OP, ADDR_SEL, ADDR_REG_OP, DATA_BUS_WIDTH
 
 @cocotb.test()
 async def test_flash_read(dut):

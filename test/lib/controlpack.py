@@ -1,5 +1,9 @@
 from enum import Enum 
 
+DATA_BUS_WIDTH = 8
+ADDRESS_WIDTH = 16
+NUM_REGISTERS = 4 
+
 class ALU_OP(Enum):
         THR = 0
         ADD = 1
@@ -12,9 +16,6 @@ class ALU_OP(Enum):
         OR = 8
         XOR = 9
         NOT = 10
-
-DATA_BUS_WIDTH = 8 
-NUM_REGISTERS = 4 
 
 class REGISTERS_OP(Enum):
         REG_NOP = 0
@@ -33,7 +34,7 @@ class MEM_CTRL_STATE(Enum):
         ST_WAIT_WRITE = 3  
 
 class ADDR_REG_OP(Enum):
-        IR_NOP = 0
+        AR_NOP = 0
         ABSOLUTE = 1
         REL_SUB = 2
         REL_ADD = 3
@@ -47,3 +48,19 @@ class MEM_CTRL_OP(Enum):
         MEM_NOP = 0
         MEM_READ = 1
         MEM_WRITE = 2
+
+class MUX_SEL(Enum):
+        MUX_ALU = 0
+        MUX_MEM = 1
+        MUX_IO = 2
+
+class CTRL_STATE(Enum):
+        ST_FETCH = 0
+        ST_DECODE = 1
+        ST_ALU_OP = 2
+        ST_LDX_OP = 3
+        ST_LDX_WAIT_RAM_READ = 4
+        ST_LDX_WAIT_FLASH_READ = 5
+        ST_LDX_WAIT_WRITE = 6
+        ST_JMP_WAIT_PARAM_READ = 7
+        ST_INC_PC = 8

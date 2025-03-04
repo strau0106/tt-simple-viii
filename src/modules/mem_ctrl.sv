@@ -1,7 +1,15 @@
+/* verilator lint_off ENUMVALUE */
+
 module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
   input logic clock, 
   input logic reset,
   
+  `ifdef SCAN
+  input logic test,
+  input logic scan_in,
+  output logic scan_out,
+  `endif
+
   // CPU Interface
   input mem_ctrl_op_e op,
   input addr_register_op_e addr_reg_op,
@@ -26,6 +34,7 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
 );
   // Address Register
   logic[ADDRESS_WIDTH-1:0] addrs_d[2]; // Intermediate state of the registers
+  logic[ADDRESS_WIDTH-1:0] addrs_dt[2];
   logic[ADDRESS_WIDTH-1:0] addrs[2];
 
   assign addr_out = {(addr_sel == PC) ? 2'b00 : 2'b10, 7'b0, addrs[addr_sel]};
@@ -52,14 +61,27 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
       endcase
   end
 
+  `ifndef SCAN
+    wire test = 1'b0;
+    wire scan_in = 1'b0;
+  `endif
+
+  always_comb begin
+    addrs_dt[0] = test ? {test, addrs[0][ADDRESS_WIDTH-1:1]} : addrs_d[0];
+    addrs_dt[1] = test ? {addrs[0][0], addrs[1][ADDRESS_WIDTH-1:1]} : addrs_d[1];
+  end
+
+  logic scan_out_addr_reg;
+  assign scan_out_addr_reg = test ? addrs_d[1][0] : 1'b0;
+
 
   always_ff @(posedge clock) begin
     if (!reset) begin 
       addrs[0] <= 0;
       addrs[1] <= 0;
     end else begin
-      addrs[0] <= addrs_d[0];
-      addrs[1] <= addrs_d[1];
+      addrs[0] <= addrs_dt[0];
+      addrs[1] <= addrs_dt[1];
     end
   end
 
@@ -153,6 +175,30 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
 
   end
 
+  logic[1:0] state_dt;
+  logic op_done_out_dt;
+  logic start_read_dt;
+  logic start_write_dt;
+  logic stall_txn_dt;
+  logic stop_txn_dt;
+  logic [7:0] bus_data_out_dt, data_out_dt;
+
+  assign state_dt = test ? {scan_out_addr_reg, state[1]} : state_d;
+
+  always_comb begin
+    op_done_out_dt = test ? state[0] : op_done_out_d;
+    start_read_dt = test ? op_done_out : start_read_d;
+    start_write_dt = test ? start_read : start_write_d;
+    stall_txn_dt = test ? start_write : stall_txn_d;
+    stop_txn_dt = test ? stall_txn : stop_txn_d;
+    bus_data_out_dt = test ? {stop_txn, bus_data_out[7:1]} : bus_data_out_d;
+    data_out_dt = test ? {bus_data_out[0], data_out[7:1]} : data_out_d;
+  end
+
+  `ifdef SCAN
+  assign scan_out = test ? data_out[0] : 1'b0;
+  `endif
+
   always_ff @(posedge clock) begin
     if (!reset) begin
       state <= ST_IDLE;
@@ -164,14 +210,14 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
       stall_txn <= 0;
       stop_txn <= 0;
     end else begin
-      state <= state_d;
-      op_done_out <= op_done_out_d;
-      start_read <= start_read_d;
-      start_write <= start_write_d;
-      stall_txn <= stall_txn_d;
-      stop_txn <= stop_txn_d;
-      bus_data_out <= bus_data_out_d;
-      data_out <= data_out_d;
+      state <= state_dt;
+      op_done_out <= op_done_out_dt;
+      start_read <= start_read_dt;
+      start_write <= start_write_dt;
+      stall_txn <= stall_txn_dt;
+      stop_txn <= stop_txn_dt;
+      bus_data_out <= bus_data_out_dt;
+      data_out <= data_out_dt;
     end
  
  end

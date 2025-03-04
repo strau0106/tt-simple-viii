@@ -1,7 +1,13 @@
 module mem #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
   input logic clock, 
   input logic reset,
-  
+
+  `ifdef SCAN
+  input logic test,
+  input logic scan_in,
+  output logic scan_out,
+  `endif
+
   // CPU Interface
   input mem_ctrl_op_e op,
   input addr_register_op_e addr_reg_op,
@@ -64,7 +70,13 @@ qspi_ctrl  qspi_ctrl_instance(
 mem_ctrl #(DATA_BUS_WIDTH, ADDRESS_WIDTH) mem_ctrl_instance (
   .clock(clock),
   .reset(reset),
-
+  
+  `ifdef SCAN
+  .test(test),
+  .scan_in(scan_in),
+  .scan_out(scan_out),
+  `endif
+  
   .op(op),
   .addr_reg_op(addr_reg_op),
   .addr_sel(addr_sel),

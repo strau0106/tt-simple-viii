@@ -4,6 +4,12 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
   input logic clock,
   input logic reset,
 
+  `ifdef SCAN
+  input logic test,
+  input logic scan_in,
+  output logic scan_out,
+  `endif
+  
   output mem_ctrl_op_e mem_ctrl_op, 
   output addr_register_op_e addr_reg_op,
   output addr_sel_e addr_sel,
@@ -32,20 +38,20 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
     ST_INC_PC
   } ctrl_state /*verilator public*/;
 
-  ctrl_state state, state_d;
+  ctrl_state state, state_d, state_dt;
 
-  logic[1:0] mem_ctrl_op_d;
-  logic[2:0] addr_reg_op_d;
-  logic addr_sel_d;
-  logic[3:0] alu_op_d;
-  logic reg_op_d;
-  logic[1:0] reg_sel_in_d;
-  logic[1:0] reg_sel_1_d;
-  logic[1:0] reg_sel_2_d;
-  logic[1:0] mux_sel_d;
-  logic jmp_op_addr_sel_d, jmp_op_addr_sel;
-  logic flag_carry_d, flag_carry;
-  logic flag_zero_d, flag_zero;
+  logic[1:0] mem_ctrl_op_d, mem_ctrl_op_dt;
+  logic[2:0] addr_reg_op_d, addr_reg_op_dt;
+  logic addr_sel_d, addr_sel_dt;
+  logic[3:0] alu_op_d, alu_op_dt;
+  logic reg_op_d, reg_op_dt;
+  logic[1:0] reg_sel_in_d, reg_sel_in_dt;
+  logic[1:0] reg_sel_1_d, reg_sel_1_dt;
+  logic[1:0] reg_sel_2_d, reg_sel_2_dt;
+  logic[1:0] mux_sel_d, mux_sel_dt;
+  logic jmp_op_addr_sel, jmp_op_addr_sel_d, jmp_op_addr_sel_dt;
+  logic flag_carry, flag_carry_d, flag_carry_dt;
+  logic flag_zero, flag_zero_d, flag_zero_dt;
 
   always_comb begin
     state_d = state;
@@ -213,6 +219,29 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
 
   end
 
+  `ifndef SCAN
+    wire test = 1'b0;
+    wire scan_in = 1'b0;
+  `endif
+
+  assign state_dt = test ? {scan_in, state[3:1]} : state_d;
+  assign mem_ctrl_op_dt = test ? {state[0], mem_ctrl_op[1]} : mem_ctrl_op_d;
+  assign addr_reg_op_dt = test ? {mem_ctrl_op[0], addr_reg_op[2:1]} : addr_reg_op_d;
+  assign addr_sel_dt = test ? addr_reg_op[0] : addr_sel_d;
+  assign alu_op_dt = test ? {addr_sel, alu_op[3:1]} : alu_op_d;
+  assign reg_op_dt = test ? alu_op[0] : reg_op_d;
+  assign reg_sel_in_dt = test ? {reg_op, reg_sel_in[1]} : reg_sel_in_d;
+  assign reg_sel_1_dt = test ? {reg_sel_in[0], reg_sel_1[1]} : reg_sel_1_d;
+  assign reg_sel_2_dt = test ? {reg_sel_1[0], reg_sel_2[1]} : reg_sel_2_d;
+  assign mux_sel_dt = test ? {reg_sel_2[0], mux_sel[1]} : mux_sel_d;
+  assign jmp_op_addr_sel_dt = test ? mux_sel[0] : jmp_op_addr_sel_d;
+  assign flag_carry_dt = test ? jmp_op_addr_sel : flag_carry_d;
+  assign flag_zero_dt = test ? flag_carry : flag_zero_d;
+
+  `ifdef SCAN
+  assign scan_out = test ? flag_zero : 1'b0;
+  `endif
+
   always_ff @(posedge clock) begin
     if (!reset) begin
       state <= ST_FETCH;
@@ -229,19 +258,19 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
       flag_carry <= 0;
       flag_zero <= 0;
     end else begin
-      state <= state_d;
-      mem_ctrl_op <= mem_ctrl_op_d;
-      addr_reg_op <= addr_reg_op_d;
-      addr_sel <= addr_sel_d;
-      alu_op <= alu_op_d;
-      reg_op <= reg_op_d;
-      reg_sel_in <= reg_sel_in_d;
-      reg_sel_1 <= reg_sel_1_d;
-      reg_sel_2 <= reg_sel_2_d;
-      mux_sel <= mux_sel_d;
-      jmp_op_addr_sel <= jmp_op_addr_sel_d;
-      flag_carry <= flag_carry_d;
-      flag_zero <= flag_zero_d;
+      state <= state_dt;
+      mem_ctrl_op <= mem_ctrl_op_dt;
+      addr_reg_op <= addr_reg_op_dt;
+      addr_sel <= addr_sel_dt;
+      alu_op <= alu_op_dt;
+      reg_op <= reg_op_dt;
+      reg_sel_in <= reg_sel_in_dt;
+      reg_sel_1 <= reg_sel_1_dt;
+      reg_sel_2 <= reg_sel_2_dt;
+      mux_sel <= mux_sel_dt;
+      jmp_op_addr_sel <= jmp_op_addr_sel_dt;
+      flag_carry <= flag_carry_dt;
+      flag_zero <= flag_zero_dt;
     end
   end
 

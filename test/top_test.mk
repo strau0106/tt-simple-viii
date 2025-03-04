@@ -14,6 +14,7 @@ TOPLEVEL_LANG = verilog
 COMPILE_ARGS +=  -DPROG_FILE=\"$(PROG_FILE)\"
 
 COMPILE_ARGS +=  -DDUMPFILE=\"$(DUMPFILE)\"
+COMPILE_ARGS += -DSCAN=YES
 
 ifneq ($(GATES),yes)
 ifneq ($(SYNTH),yes)

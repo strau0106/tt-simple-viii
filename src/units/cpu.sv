@@ -2,6 +2,13 @@ module cpu #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
   input logic clock, 
   input logic reset,
   
+  `ifdef SCAN
+  input logic test,
+  input logic scan_in,
+  output logic scan_out,
+  `endif
+  
+  
   // SPI interface
   input [3:0] spi_data_in, 
   output [3:0] spi_data_out,
@@ -37,9 +44,21 @@ register_sel_e reg_2_out_sel;
 logic [7:0] reg_1;
 logic [7:0] reg_2;
 
+`ifdef SCAN
+logic scan_reg_out;
+logic scan_mem_out;
+`endif
+
 registers #(DATA_BUS_WIDTH) registers_instance (
   .clock(clock),
   .reset(reset),
+
+  `ifdef SCAN
+  .test(test),
+  .scan_in(scan_in),
+  .scan_out(scan_reg_out),
+  `endif
+
   .op(reg_op),
   .reg_in_sel(reg_in_sel),
   .reg_1_out_sel(reg_1_out_sel),
@@ -73,12 +92,21 @@ logic op_done;
 mem #(DATA_BUS_WIDTH, ADDRESS_WIDTH) mem_instance (
   .clock(clock),
   .reset(reset),
+
+  `ifdef SCAN
+  .test(test),
+  .scan_in(scan_reg_out),
+  .scan_out(scan_mem_out),
+  `endif
+
   .op(mem_ctrl_op),
   .addr_reg_op(addr_reg_op),
   .addr_sel(addr_sel),
   .bus_data_in(bus_data),
+
   .op_done_out(op_done),
   .bus_data_out(mem_out),
+
   .spi_data_in(spi_data_in),
   .spi_data_out(spi_data_out),
   .spi_data_oe(spi_data_oe),
@@ -92,21 +120,33 @@ mem #(DATA_BUS_WIDTH, ADDRESS_WIDTH) mem_instance (
 ctrl ctrl_instance (
   .clock(clock),
   .reset(reset),
+
+  `ifdef SCAN
+  .test(test),
+  .scan_in(scan_mem_out),
+  .scan_out(scan_out),
+  `endif
+
   .mem_ctrl_op(mem_ctrl_op),
+
   .addr_reg_op(addr_reg_op),
   .addr_sel(addr_sel),
+
   .alu_op(alu_op),
+
   .reg_op(reg_op),
   .reg_sel_in(reg_in_sel),
   .reg_sel_1(reg_1_out_sel),
   .reg_sel_2(reg_2_out_sel),
+
   .mux_sel(mux_sel),
+
   .bus_data_in(bus_data),
   .mem_op_done(op_done),
+
   .flag_zero_in(flag_zero),
   .flag_carry_in(flag_carry)
 );
-
 
 
 /* verilator lint_on PINCONNECTEMPTY */

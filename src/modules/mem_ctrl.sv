@@ -67,7 +67,7 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
   `endif
 
   always_comb begin
-    addrs_dt[0] = test ? {test, addrs[0][ADDRESS_WIDTH-1:1]} : addrs_d[0];
+    addrs_dt[0] = test ? {scan_in, addrs[0][ADDRESS_WIDTH-1:1]} : addrs_d[0];
     addrs_dt[1] = test ? {addrs[0][0], addrs[1][ADDRESS_WIDTH-1:1]} : addrs_d[1];
   end
 

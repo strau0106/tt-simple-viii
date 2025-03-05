@@ -126,7 +126,7 @@ async def is_scan_chain_correct_length(dut):
   test_pattern.insert(0, 1)
 
   dut.test.value = 1
-
+  await RisingEdge(dut.clock)
   dut.reset.value = 0
   await RisingEdge(dut.clock)
   dut.reset.value = 1

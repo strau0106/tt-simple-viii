@@ -46,7 +46,7 @@ module registers #(parameter DATA_BUS_WIDTH = 8) (
   `endif
 
   always_comb begin
-    registers_dt[0] = test ? {test, registers[0][DATA_BUS_WIDTH-1:1]} : registers_d[0];
+    registers_dt[0] = test ? {scan_in, registers[0][DATA_BUS_WIDTH-1:1]} : registers_d[0];
     registers_dt[1] = test ? {registers[0][0], registers[1][DATA_BUS_WIDTH-1:1]} : registers_d[1];
     registers_dt[2] = test ? {registers[1][0], registers[2][DATA_BUS_WIDTH-1:1]} : registers_d[2];
     registers_dt[3] = test ? {registers[2][0], registers[3][DATA_BUS_WIDTH-1:1]} : registers_d[3];

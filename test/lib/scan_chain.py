@@ -159,6 +159,10 @@ class ScanPattern():
     _flag_carry = 0
     _flag_carry_length = 1
 
+    def __init__(self):
+        self._regs = [0,0,0,0]
+        self._addrs = [0,0]
+
     def set_register(self, reg_sel: REGISTER_SEL, value):
         self._regs[reg_sel] = value
         return self

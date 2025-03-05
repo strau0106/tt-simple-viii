@@ -21,7 +21,7 @@ async def test_flash_read(dut):
     dut.addr_reg_op.value = ADDR_REG_OP.ABSOLUTE.value
     await RisingEdge(dut.clock)
     await RisingEdge(dut.clock)
-    dut.addr_reg_op.value = ADDR_REG_OP.IR_NOP.value
+    dut.addr_reg_op.value = ADDR_REG_OP.AR_NOP.value
 
     dut.op.value = MEM_CTRL_OP.MEM_READ.value
     
@@ -48,7 +48,7 @@ async def test_ram_read_write(dut):
     dut.bus_data_in.value = 0x20
     dut.addr_reg_op.value = ADDR_REG_OP.ABSOLUTE.value
     await RisingEdge(dut.clock)
-    dut.addr_reg_op.value = ADDR_REG_OP.IR_NOP.value
+    dut.addr_reg_op.value = ADDR_REG_OP.AR_NOP.value
     dut.bus_data_in.value = 0xAB
     dut.op.value = MEM_CTRL_OP.MEM_WRITE.value
     dut.addr_sel.value = ADDR_SEL.MAR.value

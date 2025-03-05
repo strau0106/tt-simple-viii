@@ -223,20 +223,21 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
     wire test = 1'b0;
     wire scan_in = 1'b0;
   `endif
-
-  assign state_dt = test ? {scan_in, state[3:1]} : state_d;
-  assign mem_ctrl_op_dt = test ? {state[0], mem_ctrl_op[1]} : mem_ctrl_op_d;
-  assign addr_reg_op_dt = test ? {mem_ctrl_op[0], addr_reg_op[2:1]} : addr_reg_op_d;
-  assign addr_sel_dt = test ? addr_reg_op[0] : addr_sel_d;
-  assign alu_op_dt = test ? {addr_sel, alu_op[3:1]} : alu_op_d;
-  assign reg_op_dt = test ? alu_op[0] : reg_op_d;
-  assign reg_sel_in_dt = test ? {reg_op, reg_sel_in[1]} : reg_sel_in_d;
-  assign reg_sel_1_dt = test ? {reg_sel_in[0], reg_sel_1[1]} : reg_sel_1_d;
-  assign reg_sel_2_dt = test ? {reg_sel_1[0], reg_sel_2[1]} : reg_sel_2_d;
-  assign mux_sel_dt = test ? {reg_sel_2[0], mux_sel[1]} : mux_sel_d;
-  assign jmp_op_addr_sel_dt = test ? mux_sel[0] : jmp_op_addr_sel_d;
-  assign flag_carry_dt = test ? jmp_op_addr_sel : flag_carry_d;
-  assign flag_zero_dt = test ? flag_carry : flag_zero_d;
+  always_comb begin
+    state_dt = test ? {scan_in, state[3:1]} : state_d;
+    mem_ctrl_op_dt = test ? {state[0], mem_ctrl_op[1]} : mem_ctrl_op_d;
+    addr_reg_op_dt = test ? {mem_ctrl_op[0], addr_reg_op[2:1]} : addr_reg_op_d;
+    addr_sel_dt = test ? addr_reg_op[0] : addr_sel_d;
+    alu_op_dt = test ? {addr_sel, alu_op[3:1]} : alu_op_d;
+    reg_op_dt = test ? alu_op[0] : reg_op_d;
+    reg_sel_in_dt = test ? {reg_op, reg_sel_in[1]} : reg_sel_in_d;
+    reg_sel_1_dt = test ? {reg_sel_in[0], reg_sel_1[1]} : reg_sel_1_d;
+    reg_sel_2_dt = test ? {reg_sel_1[0], reg_sel_2[1]} : reg_sel_2_d;
+    mux_sel_dt = test ? {reg_sel_2[0], mux_sel[1]} : mux_sel_d;
+    jmp_op_addr_sel_dt = test ? mux_sel[0] : jmp_op_addr_sel_d;
+    flag_carry_dt = test ? jmp_op_addr_sel : flag_carry_d;
+    flag_zero_dt = test ? flag_carry : flag_zero_d;
+  end
 
   `ifdef SCAN
   assign scan_out = test ? flag_zero : 1'b0;

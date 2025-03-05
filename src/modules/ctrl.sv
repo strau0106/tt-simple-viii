@@ -38,7 +38,8 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
     ST_INC_PC
   } ctrl_state /*verilator public*/;
 
-  ctrl_state state, state_d, state_dt;
+  ctrl_state state, state_d;
+  logic[3:0] state_dt;
 
   logic[1:0] mem_ctrl_op_d, mem_ctrl_op_dt;
   logic[2:0] addr_reg_op_d, addr_reg_op_dt;

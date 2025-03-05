@@ -25,7 +25,7 @@ from dataclasses import dataclass
 from lib.controlpack import ADDR_SEL, ADDRESS_WIDTH, DATA_BUS_WIDTH, REGISTER_SEL, CTRL_STATE, MEM_CTRL_OP, MEM_CTRL_STATE, MUX_SEL, ALU_OP, REGISTERS_OP, ADDR_REG_OP
 
 
-def variable_to_bin_arry(var, length):
+def variable_to_bin_array(var, length):
     arr = [int(x) for x in bin(var)[2:]]
     if len(arr) > length:
         raise ValueError("Invalid var")
@@ -35,6 +35,80 @@ def variable_to_bin_arry(var, length):
 
     return arr
 
+def bin_array_to_variable(arr):
+    return int("".join(str(x) for x in arr), 2)
+
+def scan_pattern_from_array(array):
+    array.reverse()
+    pattern = ScanPattern()
+    for i in range(4):
+        pattern.set_register(i, bin_array_to_variable(array[i*DATA_BUS_WIDTH:(i+1)*DATA_BUS_WIDTH]))
+    for i in range(2):
+        pattern.set_addr(i, bin_array_to_variable(array[i*ADDRESS_WIDTH:(i+1)*ADDRESS_WIDTH]))
+    i = 4*DATA_BUS_WIDTH+2*ADDRESS_WIDTH
+    j = pattern._mem_ctrl_state_length
+    pattern.set_mem_ctrl_state(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._op_done_out_length
+    pattern.set_op_done_out(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._start_read_length
+    pattern.set_start_read(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._start_write_length
+    pattern.set_start_write(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._stall_txn_length
+    pattern.set_stall_txn(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._stop_txn_length
+    pattern.set_stop_txn(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._bus_data_out_length
+    pattern.set_bus_data_out(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._data_out_length
+    pattern.set_data_out(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._ctrl_state_length
+    pattern.set_ctrl_state(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._mem_ctrl_op_length
+    pattern.set_mem_ctrl_op(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._addr_reg_op_length
+    pattern.set_addr_reg_op(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._addr_sel_length
+    pattern.set_addr_sel(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._alu_op_length
+    pattern.set_alu_op(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._reg_op_length
+    pattern.set_reg_op(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._reg_sel_in_length
+    pattern.set_reg_sel_in(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._reg_sel_1_length
+    pattern.set_reg_sel_1(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._reg_sel_2_length
+    pattern.set_reg_sel_2(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._mux_sel_length
+    pattern.set_mux_sel(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._jmp_op_addr_sel_length
+    pattern.set_jmp_op_addr_sel(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._flag_zero_length
+    pattern.set_flag_zero(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._flag_carry_length
+    pattern.set_flag_carry(bin_array_to_variable(array[i:i+j]))
+    return pattern
 
 @dataclass
 class ScanPattern():
@@ -86,15 +160,15 @@ class ScanPattern():
     _flag_carry_length = 1
 
     def set_register(self, reg_sel: REGISTER_SEL, value):
-        self._regs[reg_sel.value] = value
+        self._regs[reg_sel] = value
         return self
 
     def set_addr(self, addr_sel: ADDR_SEL, value):
-        self._addrs[addr_sel.value] = value
+        self._addrs[addr_sel] = value
         return self
 
     def set_mem_ctrl_state(self, value: MEM_CTRL_STATE):
-        self._mem_ctrl_state = value.value
+        self._mem_ctrl_state = value
         return self
 
     def set_op_done_out(self, value):
@@ -126,43 +200,43 @@ class ScanPattern():
         return self
 
     def set_ctrl_state(self, value: CTRL_STATE):
-        self._ctrl_state = value.value
+        self._ctrl_state = value
         return self
 
     def set_mem_ctrl_op(self, value: MEM_CTRL_OP):
-        self._mem_ctrl_op = value.value
+        self._mem_ctrl_op = value
         return self
 
     def set_addr_reg_op(self, value: ADDR_REG_OP):
-        self._addr_reg_op = value.value
+        self._addr_reg_op = value
         return self
 
     def set_addr_sel(self, value: ADDR_SEL):
-        self._addr_sel = value.value
+        self._addr_sel = value
         return self
 
     def set_alu_op(self, value: ALU_OP):
-        self._alu_op = value.value
+        self._alu_op = value
         return self
 
     def set_reg_op(self, value: REGISTERS_OP):
-        self._reg_op = value.value
+        self._reg_op = value
         return self
 
     def set_reg_sel_in(self, value: REGISTER_SEL):
-        self._reg_sel_in = value.value
+        self._reg_sel_in = value
         return self
 
     def set_reg_sel_1(self, value: REGISTER_SEL):
-        self._reg_sel_1 = value.value
+        self._reg_sel_1 = value
         return self
 
     def set_reg_sel_2(self, value: REGISTER_SEL):
-        self._reg_sel_2 = value.value
+        self._reg_sel_2 = value
         return self
 
     def set_mux_sel(self, value: MUX_SEL):
-        self._mux_sel = value.value
+        self._mux_sel = value
         return self
 
     def set_jmp_op_addr_sel(self, value):
@@ -179,39 +253,39 @@ class ScanPattern():
 
     def bin(self) -> list[int]:
         bin_array = [
-            [bit for sublist in [variable_to_bin_arry(
-                x, self._regs_length) for x in self._regs] for bit in sublist],
-            [bit for sublist in [variable_to_bin_arry(x, self._addrs_length)
-             for x in self._addrs] for bit in sublist],
-            variable_to_bin_arry(
+            sum([variable_to_bin_array(
+                x, self._regs_length) for x in self._regs], []),
+            sum([variable_to_bin_array(x, self._addrs_length) for x in self._addrs], []),
+            variable_to_bin_array(
                 self._mem_ctrl_state,
                 self._mem_ctrl_state_length),
-            variable_to_bin_arry(self._op_done_out, self._op_done_out_length),
-            variable_to_bin_arry(self._start_read, self._start_read_length),
-            variable_to_bin_arry(self._start_write, self._start_write_length),
-            variable_to_bin_arry(self._stall_txn, self._stall_txn_length),
-            variable_to_bin_arry(self._stop_txn, self._stop_txn_length),
-            variable_to_bin_arry(
+            variable_to_bin_array(self._op_done_out, self._op_done_out_length),
+            variable_to_bin_array(self._start_read, self._start_read_length),
+            variable_to_bin_array(self._start_write, self._start_write_length),
+            variable_to_bin_array(self._stall_txn, self._stall_txn_length),
+            variable_to_bin_array(self._stop_txn, self._stop_txn_length),
+            variable_to_bin_array(
                 self._bus_data_out,
                 self._bus_data_out_length),
-            variable_to_bin_arry(self._data_out, self._data_out_length),
-            variable_to_bin_arry(self._ctrl_state, self._ctrl_state_length),
-            variable_to_bin_arry(self._mem_ctrl_op, self._mem_ctrl_op_length),
-            variable_to_bin_arry(self._addr_reg_op, self._addr_reg_op_length),
-            variable_to_bin_arry(self._addr_sel, self._addr_sel_length),
-            variable_to_bin_arry(self._alu_op, self._alu_op_length),
-            variable_to_bin_arry(self._reg_op, self._reg_op_length),
-            variable_to_bin_arry(self._reg_sel_in, self._reg_sel_in_length),
-            variable_to_bin_arry(self._reg_sel_1, self._reg_sel_1_length),
-            variable_to_bin_arry(self._reg_sel_2, self._reg_sel_2_length),
-            variable_to_bin_arry(self._mux_sel, self._mux_sel_length),
-            variable_to_bin_arry(
+            variable_to_bin_array(self._data_out, self._data_out_length),
+            variable_to_bin_array(self._ctrl_state, self._ctrl_state_length),
+            variable_to_bin_array(self._mem_ctrl_op, self._mem_ctrl_op_length),
+            variable_to_bin_array(self._addr_reg_op, self._addr_reg_op_length),
+            variable_to_bin_array(self._addr_sel, self._addr_sel_length),
+            variable_to_bin_array(self._alu_op, self._alu_op_length),
+            variable_to_bin_array(self._reg_op, self._reg_op_length),
+            variable_to_bin_array(self._reg_sel_in, self._reg_sel_in_length),
+            variable_to_bin_array(self._reg_sel_1, self._reg_sel_1_length),
+            variable_to_bin_array(self._reg_sel_2, self._reg_sel_2_length),
+            variable_to_bin_array(self._mux_sel, self._mux_sel_length),
+            variable_to_bin_array(
                 self._jmp_op_addr_sel,
                 self._jmp_op_addr_sel_length),
-            variable_to_bin_arry(self._flag_zero, self._flag_zero_length),
-            variable_to_bin_arry(self._flag_carry, self._flag_carry_length)
+            variable_to_bin_array(self._flag_zero, self._flag_zero_length),
+            variable_to_bin_array(self._flag_carry, self._flag_carry_length)
         ]
-        print(bin_array)
-        bin_array = [bit for sublist in bin_array for bit in sublist]
+        bin_array = sum(bin_array, [])
         bin_array.reverse()
         return bin_array
+    
+    

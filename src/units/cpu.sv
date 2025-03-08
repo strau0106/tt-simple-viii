@@ -43,6 +43,10 @@ register_sel_e reg_2_out_sel;
 
 logic [7:0] reg_1;
 logic [7:0] reg_2;
+logic [63:0] register_bank;
+
+logic use_register_bank_in;
+logic use_register_bank_out_1;
 
 `ifdef SCAN
 logic scan_reg_out;
@@ -63,9 +67,15 @@ registers #(DATA_BUS_WIDTH) registers_instance (
   .reg_in_sel(reg_in_sel),
   .reg_1_out_sel(reg_1_out_sel),
   .reg_2_out_sel(reg_2_out_sel),
+  .use_register_bank_in(use_register_bank_in),
+  .use_register_bank_out_1(use_register_bank_out_1),
+
   .reg_data_in(bus_data),
+
   .reg_1_out(reg_1),
-  .reg_2_out(reg_2)
+  .reg_2_out(reg_2),
+
+  .register_bank_out(register_bank)
 );
 
 // ALU
@@ -113,7 +123,9 @@ mem #(DATA_BUS_WIDTH, ADDRESS_WIDTH) mem_instance (
   .spi_clk_out(spi_clk_out),
   .spi_flash_select(spi_flash_select),
   .spi_ram_a_select(spi_ram_a_select),
-  .spi_ram_b_select()
+  .spi_ram_b_select(),
+
+  .register_bank_in(register_bank)
 );
 
 // Control
@@ -138,6 +150,8 @@ ctrl ctrl_instance (
   .reg_sel_in(reg_in_sel),
   .reg_sel_1(reg_1_out_sel),
   .reg_sel_2(reg_2_out_sel),
+  .use_register_bank_in(use_register_bank_in),
+  .use_register_bank_out_1(use_register_bank_out_1),
 
   .mux_sel(mux_sel),
 

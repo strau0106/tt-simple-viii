@@ -25,7 +25,10 @@ module mem #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
 
   output reg spi_flash_select,
   output reg spi_ram_a_select,
-  output reg spi_ram_b_select
+  output reg spi_ram_b_select,
+
+  // REGISTER BANK interface
+  input logic[DATA_BUS_WIDTH*8-1:0] register_bank_in
 );
 
 logic [24:0] addr;
@@ -93,7 +96,9 @@ mem_ctrl #(DATA_BUS_WIDTH, ADDRESS_WIDTH) mem_ctrl_instance (
   .stop_txn(stop_txn),
   .data_in(data_qo_mi),
   .data_req(data_req),
-  .data_ready(data_ready)
+  .data_ready(data_ready),
+
+  .register_bank_in(register_bank_in)
 
 );
 

@@ -10,6 +10,8 @@ async def reset(dut):
     dut.reset.value = 0
     await RisingEdge(dut.clock)
     dut.reset.value = 1
+    dut.use_register_bank_in.value = 0
+    dut.use_register_bank_out_1.value = 0
     await RisingEdge(dut.clock)
 
 async def write_register(dut, reg_sel, data):
@@ -18,6 +20,16 @@ async def write_register(dut, reg_sel, data):
     dut.reg_data_in.value = data
     await RisingEdge(dut.clock)
     dut.op.value = REGISTERS_OP.REG_NOP.value
+
+async def write_register_bank(dut, reg, data):
+    await write_register(dut, REGISTER_SEL.REG_A, reg)
+    dut.op.value = REGISTERS_OP.REG_WRITE
+    dut.reg_in_sel.value = REGISTER_SEL.REG_A.value
+    dut.reg_data_in.value = data
+    dut.use_register_bank.value = 1
+    await RisingEdge(dut.clock)
+    dut.op.value = REGISTERS_OP.REG_NOP
+    
 
 async def read_registers(dut, reg_1_sel, reg_2_sel):
     dut.reg_1_out_sel.value = reg_1_sel.value
@@ -38,11 +50,21 @@ async def test_basic_sequential_write_read(dut):
         reg_1_out, _ = await read_registers(dut, reg, REGISTER_SEL.REG_A)
         assert reg_1_out == test_value, f"Write/Read failed: Register {reg.name} expected {test_value}, got {reg_1_out}"
 
+""" async def test_basic_sequential_write_read_reg_bank(dut):
+    clock = Clock(dut.clock, 10, units="ns")
+    cocotb.start_soon(clock.start())
+    await reset(dut)
+
+    for reg in range(16):
+        await write_register(dut, REGISTER_SEL.REG_A, reg)
+ """
+
 @pytest.mark.dependency(depends=["test_basic_sequential_write_read"])
 @cocotb.test() 
 async def test_reset_functionality(dut):
     clock = Clock(dut.clock, 10, units="ns")
     cocotb.start_soon(clock.start())
+    await reset(dut)
 
     for reg in REGISTER_SEL:
         test_value = random.randint(0, 2**DATA_BUS_WIDTH - 1)

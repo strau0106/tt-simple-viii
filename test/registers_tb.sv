@@ -12,6 +12,10 @@ module registers_tb #(parameter DATA_BUS_WIDTH = 8) (
   input register_sel_e reg_1_out_sel,
   input register_sel_e reg_2_out_sel,
 
+  input logic use_register_bank_in,
+  input logic use_register_bank_out_1,
+
+
   input logic[DATA_BUS_WIDTH-1:0] reg_data_in,
   
   output logic[DATA_BUS_WIDTH-1:0] reg_1_out,
@@ -33,6 +37,8 @@ module registers_tb #(parameter DATA_BUS_WIDTH = 8) (
     .reg_in_sel(reg_in_sel),
     .reg_1_out_sel(reg_1_out_sel),
     .reg_2_out_sel(reg_2_out_sel),
+    .use_register_bank_in(use_register_bank_in),
+    .use_register_bank_out_1(use_register_bank_out_1),
 
     .reg_data_in(reg_data_in),
     

@@ -18,6 +18,8 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
   output register_sel_e reg_sel_in,
   output register_sel_e reg_sel_1,
   output register_sel_e reg_sel_2,
+  output logic use_register_bank_in,
+  output logic use_register_bank_out_1,
   output mux_sel_e mux_sel,
 
   input logic[DATA_BUS_WIDTH-1:0] bus_data_in,
@@ -49,6 +51,8 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
   logic[1:0] reg_sel_in_d, reg_sel_in_dt;
   logic[1:0] reg_sel_1_d, reg_sel_1_dt;
   logic[1:0] reg_sel_2_d, reg_sel_2_dt;
+  logic use_register_bank_in_d, use_register_bank_in_dt;
+  logic use_register_bank_out_1_d, use_register_bank_out_1_dt;
   logic[1:0] mux_sel_d, mux_sel_dt;
   logic jmp_op_addr_sel, jmp_op_addr_sel_d, jmp_op_addr_sel_dt;
   logic flag_carry, flag_carry_d, flag_carry_dt;
@@ -64,6 +68,8 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
     reg_sel_in_d = REG_A;
     reg_sel_1_d = REG_A;
     reg_sel_2_d = REG_A;
+    use_register_bank_in_d = 0;
+    use_register_bank_out_1_d = 0;
     mux_sel_d = MUX_ALU;
     jmp_op_addr_sel_d = 0;
     flag_zero_d = flag_zero;
@@ -112,9 +118,11 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
               mux_sel_d = MUX_MEM;
               state_d = ST_LDX_WAIT_RAM_READ;
               reg_sel_in_d = bus_data_in[3:2];
+              use_register_bank_in_d = bus_data_in[1];
              end
             REG2RAM: begin // reg to mem
               reg_sel_1_d = bus_data_in[3:2];
+              use_register_bank_out_1_d = bus_data_in[1];
               alu_op_d = THR;
               mux_sel_d = MUX_ALU;
               mem_ctrl_op_d = MEM_WRITE;
@@ -128,6 +136,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
               mux_sel_d = MUX_MEM;
               state_d = ST_LDX_WAIT_FLASH_READ;
               reg_sel_in_d = bus_data_in[3:2];
+              use_register_bank_in_d = bus_data_in[1];
             end
             default: state_d = ST_INC_PC;
             endcase
@@ -136,6 +145,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
             if (flag_carry != bus_data_in[5] && flag_zero != bus_data_in[4]) state_d = ST_INC_PC;
             else begin 
               reg_sel_1_d = bus_data_in[3:2];
+              use_register_bank_out_1_d = bus_data_in[0];
               jmp_op_addr_sel_d =  bus_data_in[1];
               addr_reg_op_d = INC;
               addr_sel_d = PC;
@@ -158,6 +168,8 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
         // bus_data_in is param1
         reg_sel_2_d = bus_data_in[7:6];
         reg_sel_in_d = bus_data_in[5:4];
+        use_register_bank_in_d = bus_data_in[3];
+        use_register_bank_out_1_d = bus_data_in[2];
 
         mem_ctrl_op_d = MEM_NOP;
         mux_sel_d = MUX_ALU;
@@ -172,6 +184,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
       addr_sel_d = MAR;
       mux_sel_d = MUX_MEM;
       reg_sel_in_d = reg_sel_in;
+      use_register_bank_in_d = use_register_bank_in;
       if (mem_op_done) begin
         reg_op_d = REG_WRITE;
         state_d = ST_INC_PC;
@@ -182,6 +195,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
       addr_sel_d = PC;
       mux_sel_d = MUX_MEM;
       reg_sel_in_d = reg_sel_in;
+      use_register_bank_in_d = use_register_bank_in;
       if (mem_op_done) begin
         reg_op_d = REG_WRITE;
         state_d = ST_INC_PC;
@@ -189,6 +203,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
     end
     ST_LDX_WAIT_WRITE: begin
       reg_sel_1_d = reg_sel_1;
+      use_register_bank_out_1_d = use_register_bank_out_1;
       alu_op_d = THR;
       mux_sel_d = MUX_ALU;
       mem_ctrl_op_d = MEM_WRITE;
@@ -203,6 +218,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
       mux_sel_d = MUX_MEM;
       jmp_op_addr_sel_d = jmp_op_addr_sel;
       reg_sel_1_d = reg_sel_1;
+      use_register_bank_out_1_d = use_register_bank_out_1;
       alu_op_d = THR;
       if (mem_op_done) begin
         // bus_data_in is param1
@@ -238,10 +254,12 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
     jmp_op_addr_sel_dt = test ? mux_sel[0] : jmp_op_addr_sel_d;
     flag_carry_dt = test ? jmp_op_addr_sel : flag_carry_d;
     flag_zero_dt = test ? flag_carry : flag_zero_d;
+    use_register_bank_in_dt = test ? flag_zero : use_register_bank_in_d;
+    use_register_bank_out_1_dt = test ? use_register_bank_in : use_register_bank_out_1_d;
   end
 
   `ifdef SCAN
-  assign scan_out = test ? flag_zero : 1'b0;
+  assign scan_out = test ? use_register_bank_out_1 : 1'b0;
   `endif
 
   always_ff @(posedge clock) begin
@@ -255,6 +273,8 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
       reg_sel_in <= REG_A;
       reg_sel_1 <= REG_A;
       reg_sel_2 <= REG_A;
+      use_register_bank_in <= 0;
+      use_register_bank_out_1 <= 0;
       mux_sel <= MUX_ALU;
       jmp_op_addr_sel <= 0;
       flag_carry <= 0;
@@ -269,6 +289,8 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
       reg_sel_in <= reg_sel_in_dt;
       reg_sel_1 <= reg_sel_1_dt;
       reg_sel_2 <= reg_sel_2_dt;
+      use_register_bank_in <= use_register_bank_in_dt;
+      use_register_bank_out_1 <= use_register_bank_out_1_dt;
       mux_sel <= mux_sel_dt;
       jmp_op_addr_sel <= jmp_op_addr_sel_dt;
       flag_carry <= flag_carry_dt;

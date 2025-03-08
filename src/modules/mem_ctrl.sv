@@ -1,6 +1,6 @@
 /* verilator lint_off ENUMVALUE */
 
-module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
+module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16, parameter REGISTER_BANK_STARTING_ADDRESS = 127) (
   input logic clock, 
   input logic reset,
   
@@ -29,7 +29,10 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
 
   input [7:0] data_in,
   input   data_req,
-  input   data_ready
+  input   data_ready,
+
+  // REGISTER BANK interface
+  input logic[DATA_BUS_WIDTH*8-1:0] register_bank_in
 
 );
   // Address Register
@@ -115,6 +118,13 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
       // TODO: Implement stall. 
       ST_IDLE: begin
         if (op == MEM_READ) begin
+          if (addr_sel == PC && addrs[addr_sel] >= REGISTER_BANK_STARTING_ADDRESS && addrs[addr_sel] < REGISTER_BANK_STARTING_ADDRESS+8) begin
+            op_done_out_d = 1;
+            state_d = ST_DATA_READY;
+          end else begin
+            start_read_d = 1;
+            state_d = ST_WAIT_READ;
+          end
           start_read_d = 1;
           state_d = ST_WAIT_READ;
         end else if (op == MEM_WRITE) begin
@@ -163,6 +173,8 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
 
     if (state_d == ST_DATA_READY && data_ready) begin
       bus_data_out_d = data_in;
+    end else if (addr_sel == PC && addrs[addr_sel] >= REGISTER_BANK_STARTING_ADDRESS && addrs[addr_sel] < REGISTER_BANK_STARTING_ADDRESS+8 && op == MEM_READ) begin
+      bus_data_out_d = register_bank_in[addrs[addr_sel] - REGISTER_BANK_STARTING_ADDRESS*8 +: 8];
     end else if (state_d == ST_IDLE) begin
       bus_data_out_d = 0;
     end

@@ -37,13 +37,13 @@ async def test_alu_op(dut):
   test_pattern.set_register(1, 27)
 
 
-  shift_pattern_in(dut, test_pattern)
+  await shift_pattern_in(dut, test_pattern)
   
   await RisingEdge(dut.clock)
   await RisingEdge(dut.clock)
 
   assert dut.reg_d.value == 50, f"ALU_OP ADD failed: Expected 50, got {dut.reg_d.value}"
 
-  output_pattern = shift_pattern_out(dut)
+  output_pattern = await shift_pattern_out(dut)
 
   assert output_pattern._regs[3] == 50, f"ALU_OP ADD failed: Expected 50, got {output_pattern._regs[2]}"

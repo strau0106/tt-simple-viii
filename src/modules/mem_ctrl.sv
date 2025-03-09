@@ -174,7 +174,7 @@ module mem_ctrl #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16, pa
     if (state_d == ST_DATA_READY && data_ready) begin
       bus_data_out_d = data_in;
     end else if (addr_sel == PC && addrs[addr_sel] >= REGISTER_BANK_STARTING_ADDRESS && addrs[addr_sel] < REGISTER_BANK_STARTING_ADDRESS+8 && op == MEM_READ) begin
-      bus_data_out_d = register_bank_in[addrs[addr_sel] - REGISTER_BANK_STARTING_ADDRESS*8 +: 8];
+      bus_data_out_d = register_bank_in[addrs[addr_sel] - REGISTER_BANK_STARTING_ADDRESS +: 8];
     end else if (state_d == ST_IDLE) begin
       bus_data_out_d = 0;
     end

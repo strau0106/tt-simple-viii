@@ -47,3 +47,30 @@ async def test_alu_op(dut):
   output_pattern = await shift_pattern_out(dut)
 
   assert output_pattern._regs[3] == 50, f"ALU_OP ADD failed: Expected 50, got {output_pattern._regs[2]}"
+
+@cocotb.test()
+async def test_mapped_register_bank(dut):
+  clock = Clock(dut.clock, 2, units="ns")
+  cocotb.start_soon(clock.start())
+  dut.scan_in.value = 0
+  await reset(dut)
+
+  test_pattern=ScanPattern()
+  test_pattern.set_ctrl_state(0)
+  test_pattern.set_addr(1, 127)
+  test_pattern.set_register(0, 1)
+  test_pattern.set_register(1, 1)
+  test_pattern.set_register(2, 10)
+  test_pattern.set_bank_register(0, 0x44) 
+  test_pattern.set_bank_register(1, 0x40) # AOP; ADD; REG_A; REG_B; REG_A
+  test_pattern.set_bank_register(3, 0x44)
+  test_pattern.set_bank_register(4, 0x80)
+  test_pattern.set_bank_register(5, 0x40)
+  test_pattern.set_bank_register(6, 0x30)
+
+  await shift_pattern_in(dut, test_pattern)
+
+  await RisingEdge(dut.clock)
+
+  for _ in range(800):
+    await RisingEdge(dut.clock)

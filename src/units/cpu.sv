@@ -18,11 +18,12 @@ module cpu #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
   output spi_flash_select,
   output spi_ram_a_select,
 
-  output [7:0] bus_data
+  output [7:0] reg_d
 );
 
 logic [7:0] alu_out;
 logic [7:0] mem_out;
+logic [7:0] bus_data;
 
 /* verilator lint_off PINCONNECTEMPTY */
 // MUX
@@ -74,6 +75,8 @@ registers #(DATA_BUS_WIDTH) registers_instance (
 
   .reg_1_out(reg_1),
   .reg_2_out(reg_2),
+
+  .reg_d_out(reg_d),
 
   .register_bank_out(register_bank)
 );

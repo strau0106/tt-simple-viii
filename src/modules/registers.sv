@@ -24,6 +24,8 @@ module registers #(parameter DATA_BUS_WIDTH = 8, parameter REGISTERS_IN_BANK_WIT
   output logic[DATA_BUS_WIDTH-1:0] reg_1_out,
   output logic[DATA_BUS_WIDTH-1:0] reg_2_out,
 
+  output logic[DATA_BUS_WIDTH-1:0] reg_d_out,
+
   output logic[DATA_BUS_WIDTH*8-1:0] register_bank_out
 );
   
@@ -42,6 +44,8 @@ module registers #(parameter DATA_BUS_WIDTH = 8, parameter REGISTERS_IN_BANK_WIT
 
   assign reg_1_out = use_register_bank_out_1 ? register_bank[registers[reg_1_out_sel][BANK_INDEX_WIDTH-1:0]] : registers[reg_1_out_sel];
   assign reg_2_out = registers[reg_2_out_sel];
+
+  assign reg_d_out = registers[3];
 
   always_comb begin
     for (int i = 0; i < 8; i = i+1) begin

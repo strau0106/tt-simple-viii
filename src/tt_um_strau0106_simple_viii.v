@@ -59,8 +59,8 @@ module tt_um_strau0106_simple_viii #(parameter DATA_BUS_WIDTH = 8, parameter ADD
     .spi_flash_select(spi_flash_select),
     .spi_ram_a_select(spi_ram_a_select),
     
-    .reg_d(uo_out)
-    //.data_in(ui_in[5:0])
+    .reg_d(uo_out),
+    .data_in(ui_in[5:0])
   );
 
 endmodule

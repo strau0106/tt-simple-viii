@@ -99,7 +99,14 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
         mem_ctrl_op_d = MEM_NOP;
         case (bus_data_in[7:6])
           NOP: begin
-            state_d = ST_INC_PC;
+            if (bus_data_in[5] == 0) state_d = ST_INC_PC;
+            else begin
+              reg_sel_in_d = bus_data_in[4:3];
+              use_register_bank_in_d = bus_data_in[2];
+              mux_sel_d = MUX_IO;
+              reg_op_d = REG_WRITE;
+              state_d = ST_INC_PC;
+            end
           end
 
           ALU: begin // alu instr param0: alu_op[3:0], reg_sel_1[1:0], param1: reg_sel_2[1:0], reg_sel_in[1:0]

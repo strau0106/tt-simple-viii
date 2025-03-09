@@ -18,7 +18,8 @@ module cpu #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
   output spi_flash_select,
   output spi_ram_a_select,
 
-  output [7:0] reg_d
+  output [7:0] reg_d,
+  input [5:0] data_in
 );
 
 logic [7:0] alu_out;
@@ -32,7 +33,7 @@ mux mux_instance (
   .sel(mux_sel),
   .alu_in(alu_out),
   .mem_in(mem_out),
-  .i_o_in(),
+  .i_o_in({data_in, 2'b00}),
   .out(bus_data)
 );
 

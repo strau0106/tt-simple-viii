@@ -1,7 +1,7 @@
 import cocotb
 import pytest
 from lib.controlpack import ALU_OP
-from utils import advance_sim
+from lib.utils import advance_sim
 from collections import namedtuple
 
 Param = namedtuple('Param', ["op", "reg1", "reg2", "expected_result", "expected_carry", "expected_zero", "test_name"])

@@ -14,8 +14,7 @@ module top_tb #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
   output logic scan_out,
   `endif
 
-  output [7:0] bus_data,
-  output [7:0] asd
+  output [7:0] reg_d
   );
   // Dump the signals to a VCD file. You can view it with gtkwave or surfer.
   initial begin
@@ -43,9 +42,9 @@ module top_tb #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
     .qspi_ram_a_select(spi_ram_a_select),
     .qspi_ram_b_select(1'b1),
 
-    .debug_clk(clock),
-    .debug_addr(addr),  
-    .debug_data(asd)
+    .debug_clk(),
+    .debug_addr(),  
+    .debug_data()
 
   );
 
@@ -76,7 +75,7 @@ module top_tb #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
     `endif
     
     .ui_in(ui_in),
-    .uo_out(bus_data),
+    .uo_out(reg_d),
     .uio_out(uio_out),
     .uio_in(uio_in),
     .uio_oe(),

@@ -6,12 +6,12 @@ SIM ?= icarus
 SRC_DIR = $(PWD)/../src
 MODULE_NAME ?= top
 DUMPFILE = top_$(PROG)_dump.fst
-PROG_FILE = top_ops_test.hex
+PROG_FILE = top_$(PROG)_test.hex
 PROJECT_SOURCES = packages/* modules/*v units/*.sv tt_um_strau0106_simple_viii.v
 TOPLEVEL_LANG = verilog
 
 
-COMPILE_ARGS +=  -DPROG_FILE=\"$(PROG_FILE)\"
+COMPILE_ARGS +=  -DPROG_FILE=\"top_prog.hex\"
 
 COMPILE_ARGS +=  -DDUMPFILE=\"$(DUMPFILE)\"
 COMPILE_ARGS += -DSCAN=YES
@@ -79,5 +79,7 @@ TOPLEVEL = top_tb
 # MODULE is the basename of the Python test file
 MODULE = top_$(PROG)_test
 
+
+$(shell cp $(PROG_FILE) top_prog.hex)
 # include cocotb's make rules to take care of the simulator setup
 include $(shell cocotb-config --makefiles)/Makefile.sim

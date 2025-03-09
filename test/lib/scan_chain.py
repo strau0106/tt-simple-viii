@@ -1,27 +1,5 @@
-# Scan Chain
-# REG A-D 4*8 bits
-# PC&MAR 2*16 bits
-# MEM_CTRL_STATE 2 bits
-# op_done_out 1 bit
-# start_read 1 bit
-# start_write 1 bit
-# stall_txn
-# stop_txn
-# bus_data_out 8 bit
-# data_out 8 bit
-# CTRL_STATE 4 bits
-# MEM_CTRL_OP 2 bits
-# ADDR_REG_OP 3 bits
-# ADDR_SEL 1 bit
-# ALU_OP 4 bits
-# REG_OP = 1 bit
-# REG_SEL_(in|1|2) 3*2bit
-# MUX_SEL 2 bits
-# jmp_op_addr_sel 1 bit
-# flag_(zero|carry) 2*1bit
-
 from dataclasses import dataclass
-
+from cocotb.triggers import RisingEdge
 from lib.controlpack import ADDR_SEL, ADDRESS_WIDTH, DATA_BUS_WIDTH, REGISTER_SEL, CTRL_STATE, MEM_CTRL_OP, MEM_CTRL_STATE, MUX_SEL, ALU_OP, REGISTERS_OP, ADDR_REG_OP
 
 
@@ -30,22 +8,29 @@ def variable_to_bin_array(var, length):
     if len(arr) > length:
         raise ValueError("Invalid var")
 
-    while len(arr) < length:
+    while len(arr) != length:
         arr.insert(0, 0)
+    
 
     return arr
 
 def bin_array_to_variable(arr):
+    if arr[0] == "x" or arr[0] == "z":
+        return arr[0]
     return int("".join(str(x) for x in arr), 2)
 
 def scan_pattern_from_array(array):
     array.reverse()
     pattern = ScanPattern()
-    for i in range(4):
-        pattern.set_register(i, bin_array_to_variable(array[i*DATA_BUS_WIDTH:(i+1)*DATA_BUS_WIDTH]))
-    for i in range(2):
-        pattern.set_addr(i, bin_array_to_variable(array[i*ADDRESS_WIDTH:(i+1)*ADDRESS_WIDTH]))
-    i = 4*DATA_BUS_WIDTH+2*ADDRESS_WIDTH
+    for k in range(4):
+        pattern.set_register(k, bin_array_to_variable(array[k*DATA_BUS_WIDTH:(k+1)*DATA_BUS_WIDTH]))
+    i = 4*DATA_BUS_WIDTH
+    for k in range(8):
+        pattern.set_bank_register(k, bin_array_to_variable(array[i+k*DATA_BUS_WIDTH:i+(k+1)*DATA_BUS_WIDTH]))
+    i += 8*DATA_BUS_WIDTH
+    for k in range(2):
+        pattern.set_addr(k, bin_array_to_variable(array[i+k*ADDRESS_WIDTH:i+(k+1)*ADDRESS_WIDTH]))
+    i += 2*ADDRESS_WIDTH
     j = pattern._mem_ctrl_state_length
     pattern.set_mem_ctrl_state(bin_array_to_variable(array[i:i+j]))
     i += j
@@ -108,13 +93,21 @@ def scan_pattern_from_array(array):
     i += j
     j = pattern._flag_carry_length
     pattern.set_flag_carry(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._use_register_bank_in_length
+    pattern.set_use_register_bank_in(bin_array_to_variable(array[i:i+j]))
+    i += j
+    j = pattern._use_register_bank_out_1_length
+    pattern.set_use_register_bank_out_1(bin_array_to_variable(array[i:i+j]))
     return pattern
 
 @dataclass
 class ScanPattern():
-    _regs = [0, 0, 0, 0]
+    _regs = [0] * 4
     _regs_length = DATA_BUS_WIDTH
-    _addrs = [0, 0]
+    _bank_regs = [0] * 8
+    _bank_regs_length = DATA_BUS_WIDTH
+    _addrs = [0] * 2
     _addrs_length = ADDRESS_WIDTH
     _mem_ctrl_state = 0
     _mem_ctrl_state_length = 2
@@ -158,13 +151,22 @@ class ScanPattern():
     _flag_zero_length = 1
     _flag_carry = 0
     _flag_carry_length = 1
+    _use_register_bank_in = 0
+    _use_register_bank_in_length = 1
+    _use_register_bank_out_1 = 0
+    _use_register_bank_out_1_length = 1
 
     def __init__(self):
         self._regs = [0,0,0,0]
         self._addrs = [0,0]
+        self._bank_regs = [0,0,0,0,0,0,0,0]
 
     def set_register(self, reg_sel: REGISTER_SEL, value):
         self._regs[reg_sel] = value
+        return self
+    
+    def set_bank_register(self, reg_sel: int, value):
+        self._bank_regs[reg_sel] = value
         return self
 
     def set_addr(self, addr_sel: ADDR_SEL, value):
@@ -254,11 +256,21 @@ class ScanPattern():
     def set_flag_carry(self, value):
         self._flag_carry = value
         return self
+    
+    def set_use_register_bank_in(self, value):
+        self._use_register_bank_in = value
+        return self
+    
+    def set_use_register_bank_out_1(self, value):
+        self._use_register_bank_out_1 = value
+        return self
 
     def bin(self) -> list[int]:
         bin_array = [
             sum([variable_to_bin_array(
                 x, self._regs_length) for x in self._regs], []),
+            sum([variable_to_bin_array(
+                x, self._bank_regs_length) for x in self._bank_regs], []),
             sum([variable_to_bin_array(x, self._addrs_length) for x in self._addrs], []),
             variable_to_bin_array(
                 self._mem_ctrl_state,
@@ -286,10 +298,71 @@ class ScanPattern():
                 self._jmp_op_addr_sel,
                 self._jmp_op_addr_sel_length),
             variable_to_bin_array(self._flag_zero, self._flag_zero_length),
-            variable_to_bin_array(self._flag_carry, self._flag_carry_length)
+            variable_to_bin_array(self._flag_carry, self._flag_carry_length),
+            variable_to_bin_array(self._use_register_bank_in, self._use_register_bank_in_length),
+            variable_to_bin_array(self._use_register_bank_out_1, self._use_register_bank_out_1_length)
         ]
         bin_array = sum(bin_array, [])
         bin_array.reverse()
         return bin_array
     
+    def __str__(self):
+        string = f"ScanPattern:\n"
+        for i in range(4):
+            string += f"Register {i}: {self._regs[i]}\n"
+        for i in range(8):
+            string += f"Bank Register {i}: {self._bank_regs[i]}\n"
+        for i in range(2):
+            string += f"Addr {i}: {self._addrs[i]}\n"
+        string += f"Mem Ctrl State: {self._mem_ctrl_state}\n"
+        string += f"Op Done Out: {self._op_done_out}\n"
+        string += f"Start Read: {self._start_read}\n"
+        string += f"Start Write: {self._start_write}\n"
+        string += f"Stall Txn: {self._stall_txn}\n"
+        string += f"Stop Txn: {self._stop_txn}\n"
+        string += f"Bus Data Out: {self._bus_data_out}\n"
+        string += f"Data Out: {self._data_out}\n"
+        string += f"Ctrl State: {self._ctrl_state}\n"
+        string += f"Mem Ctrl Op: {self._mem_ctrl_op}\n"
+        string += f"Addr Reg Op: {self._addr_reg_op}\n"
+        string += f"Addr Sel: {self._addr_sel}\n"
+        string += f"ALU Op: {self._alu_op}\n"
+        string += f"Reg Op: {self._reg_op}\n"
+        string += f"Reg Sel In: {self._reg_sel_in}\n"
+        string += f"Reg Sel 1: {self._reg_sel_1}\n"
+        string += f"Reg Sel 2: {self._reg_sel_2}\n"
+        string += f"Mux Sel: {self._mux_sel}\n"
+        string += f"Jmp Op Addr Sel: {self._jmp_op_addr_sel}\n"
+        string += f"Flag Zero: {self._flag_zero}\n"
+        string += f"Flag Carry: {self._flag_carry}\n"
+        string += f"Use Register Bank In: {self._use_register_bank_in}\n"
+        string += f"Use Register Bank Out 1: {self._use_register_bank_out_1}\n"
+        return string
     
+
+async def shift_pattern_in(dut, pattern: ScanPattern):
+  pattern = pattern.bin()
+
+  dut.test.value = 1
+  dut.scan_in.value = 0
+  await RisingEdge(dut.clock)
+  
+  for i in range(len(pattern)):
+    dut.scan_in.value = pattern[i]
+    await RisingEdge(dut.clock)
+
+  dut.test.value = 0
+  dut.scan_in.value = 0
+
+async def shift_pattern_out(dut):
+  dut.test.value = 1
+
+  dut.scan_in.value = 0
+  output_pattern = []
+  for _ in range(len(ScanPattern().bin())+1):
+    output_pattern.append(dut.scan_out.value)
+    await RisingEdge(dut.clock)
+
+  output_pattern = scan_pattern_from_array(output_pattern)
+  dut.test.value = 0
+  return output_pattern

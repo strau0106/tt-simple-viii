@@ -13,12 +13,23 @@ def pattern_from_array(pattern):
 @cocotb.test()
 async def is_scan_pattern_implemented_correctly(_):
 
+  pattern = ScanPattern()
+  assert sum(pattern.bin()) == 0, f"Pattern {pattern.bin()} != 0"
+  assert sum(scan_pattern_from_array(pattern.bin()).bin()) == 0, f"Pattern {pattern.bin()} != 0"  
+
   for i in range(4):
     pattern = ScanPattern()
     pattern.set_register(i, 255)
 
     test_pattern = pattern_from_array(pattern)
     assert pattern.bin() == test_pattern, f"Pattern for reg {i} {pattern.bin()} != {test_pattern}"
+
+  for i in range(8):
+    pattern = ScanPattern()
+    pattern.set_bank_register(i, 255)
+
+    test_pattern = pattern_from_array(pattern)
+    assert pattern.bin() == test_pattern, f"Pattern for bank reg {i} {pattern.bin()} != {test_pattern}"
 
   for i in range(2):
     pattern = ScanPattern()
@@ -124,6 +135,7 @@ async def is_scan_chain_correct_length(dut):
   test_pattern = test_pattern_obj.bin()
   # insert 1 before everything else
   test_pattern.insert(0, 1)
+  #test_pattern.insert(0, 1)
 
   dut.test.value = 1
   await RisingEdge(dut.clock)
@@ -135,6 +147,8 @@ async def is_scan_chain_correct_length(dut):
   for i in range(len(test_pattern)):
     dut.scan_in.value = test_pattern[i] 
     await RisingEdge(dut.clock)
+    if i != len(test_pattern) - 1:
+      assert dut.scan_out.value != 1, f"Scan chain is too short: {i} {dut.scan_out.value}" 
 
 
 

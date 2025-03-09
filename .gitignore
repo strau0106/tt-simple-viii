@@ -11,3 +11,4 @@ runs
 src/config_merged.json
 src/user_config.json
 gds_render*
+test/top_prog.hex

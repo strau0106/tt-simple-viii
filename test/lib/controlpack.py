@@ -64,3 +64,8 @@ class CTRL_STATE(Enum):
         ST_LDX_WAIT_WRITE = 6
         ST_JMP_WAIT_PARAM_READ = 7
         ST_INC_PC = 8
+
+class LDX_OP(Enum):
+        REG2RAM = 0
+        RAM2REG = 1
+        FLASH2REG = 2

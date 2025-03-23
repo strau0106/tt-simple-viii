@@ -5,3 +5,4 @@ sim_build/
 *.dat
 *.fst
 *.vcd
+top_fib_test.hex

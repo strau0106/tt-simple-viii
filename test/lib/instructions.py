@@ -111,18 +111,18 @@ class JMP(Instruction):
     self._sel_1 = reg_sel.value
     return self
 
-  def set_ar_sel(self, value):
-    self._ar_sel = value
+  def set_ar_sel(self, ar_sel):
+    self._ar_sel = ar_sel.value
     return self
 
-  def set_use_register_bank(self, value):
-    self._use_register_bank = value
+  def set_use_register_bank(self, op):
+    self._use_register_bank = op.value
     return self
 
-  def set_ar_op(self, value):
-    self._ar_op = value
+  def set_ar_op(self, ar_op):
+    self._ar_op = ar_op.value
     return self
 
   def to_hex(self):
     return hex((self.JMP_OP_CODE << 6) | (self._carry << 5) | (self._zero << 4) | (self._sel_1 << 2) | 
-               (self._ar_sel << 1) | self._use_register_bank)[2:] + " " + hex(self._ar_op)[2:] 
+               (self._ar_sel << 1) | self._use_register_bank)[2:] + " " + hex(self._ar_op << 5)[2:] 

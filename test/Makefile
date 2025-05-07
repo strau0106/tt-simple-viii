@@ -15,7 +15,7 @@
 	mv results.xml $*_results.xml
 
 generate_progs:
-	python3 fibonacci_program.py
+	python3 programms.py
 
 all: clean generate_progs alu_test registers_test mem_ctrl_test mem_unit_test ctrl_test ops_top_test
 	cat *results.xml > results.xml

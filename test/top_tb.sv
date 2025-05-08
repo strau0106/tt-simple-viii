@@ -61,19 +61,8 @@ module top_tb #(parameter DATA_BUS_WIDTH = 8, parameter ADDRESS_WIDTH = 16) (
   
   //spi_data_out = {uio_in[5:4], uio_in[2:1]};
   
-  `ifdef USE_POWER_PINS
-  wire VPWR = 1'b1;
-  wire VGND = 1'b0;
-  `endif
-
-
   tt_um_strau0106_simple_viii #(DATA_BUS_WIDTH, ADDRESS_WIDTH) cpu_instance (
         // powerpins for gate level simulation
-    `ifdef USE_POWER_PINS
-      .VPWR(VPWR),
-      .VGND(VGND),
-    `endif
-    
     .ui_in(ui_in),
     .uo_out(reg_d),
     .uio_out(uio_out),

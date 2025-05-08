@@ -10,17 +10,17 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
   output logic scan_out,
   `endif
   
-  output mem_ctrl_op_e mem_ctrl_op, 
-  output addr_register_op_e addr_reg_op,
-  output addr_sel_e addr_sel,
-  output alu_op_e alu_op,
-  output registers_op_e reg_op,
-  output register_sel_e reg_sel_in,
-  output register_sel_e reg_sel_1,
-  output register_sel_e reg_sel_2,
+  output logic[1:0] mem_ctrl_op, 
+  output logic[2:0] addr_reg_op,
+  output logic addr_sel,
+  output logic[3:0] alu_op,
+  output logic[2:0] reg_op,
+  output logic[1:0] reg_sel_in,
+  output logic[1:0] reg_sel_1,
+  output logic[1:0] reg_sel_2,
   output logic use_register_bank_in,
   output logic use_register_bank_out_1,
-  output mux_sel_e mux_sel,
+  output logic[1:0] mux_sel,
 
   input logic[DATA_BUS_WIDTH-1:0] bus_data_in,
   input logic mem_op_done,
@@ -40,7 +40,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
     ST_INC_PC
   } ctrl_state /*verilator public*/;
 
-  ctrl_state state, state_d;
+  logic[3:0] state, state_d;
   logic[3:0] state_dt;
 
   logic[1:0] mem_ctrl_op_d, mem_ctrl_op_dt;

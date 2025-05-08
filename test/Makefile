@@ -17,7 +17,7 @@
 generate_progs:
 	python3 programms.py
 
-all: clean generate_progs alu_test registers_test mem_ctrl_test mem_unit_test ctrl_test ops_top_test
+all: clean generate_progs alu_test registers_test mem_ctrl_test mem_unit_test ctrl_test ops_top_test fib_top_test nth_sum_top_test register_top_test
 	cat *results.xml > results.xml
 
 clean:

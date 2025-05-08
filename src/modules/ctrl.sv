@@ -14,7 +14,7 @@ module ctrl #(parameter DATA_BUS_WIDTH = 8)(
   output logic[2:0] addr_reg_op,
   output logic addr_sel,
   output logic[3:0] alu_op,
-  output logic[2:0] reg_op,
+  output logic reg_op,
   output logic[1:0] reg_sel_in,
   output logic[1:0] reg_sel_1,
   output logic[1:0] reg_sel_2,
